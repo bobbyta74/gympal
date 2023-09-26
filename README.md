@@ -5,18 +5,20 @@ The comprehensive gym app to suit your needs. You name it, we have it.
 - Gym planner (exercise, sets, reps)
 - Set weight goals for different exercises
 - Login and password feature
-- ## Gym buddy finder (using maps API) 
-    - Filter location
-    - Filter gym membership
-    - Filter level
-- Leaderboards
+- ### Gym buddy finder
+    - Location (distance matrix API)
+    - Gym membership (text)
+    - Level (calculate algorithmically from combination of big lifts - numbers)
+    - Schedule (checkbox)
+    - Preferred workout style (checkbox)
+- ### Leaderboards
     - Global
     - Invite-only
-- Gamify
+- ### Gamify
     - Badges
     - Streaks
-- Progress visualiser (make line graphs out of volume or weight lifted over time)
-- Workout session
+- ### Workout session
     - Input weight and reps
     - Rest timer activated when input is done
     - Notification to continue workout once rest time is up
+- ### Events
