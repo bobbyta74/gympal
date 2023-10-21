@@ -6,7 +6,7 @@ cursor = connection.cursor()
 #Make table containing all users' data
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS users(
-        username TEXT,
+        username TEXT PRIMARY KEY,
         coords TEXT,
         membership TEXT,
         style TEXT,
@@ -21,7 +21,8 @@ seeddata = [
     ("ronniepickering", "52.203877248629254, 20.965159296723883", "artis", "bodybuilding", 500, "monday,tuesday,wednesday"),
     ("mudwizard", "52.23122168568795, 20.95108306546127", "zdrofit", "powerlifting", 800, "monday,tuesday,wednesday,thursday"),
     ("ozzyosbourne", "52.24737393593506, 21.014812388173574", "totalfitness", "bodybuilding", 650, "monday,wednesday,friday"),
-    ("mikolajszywala", "52.15182950616367, 21.06355143963846", "artis", "bodybuilding", 100, "monday,tuesday,wednesday,thursday,friday,saturday")
+    ("mikolajszywala", "52.15182950616367, 21.06355143963846", "artis", "bodybuilding", 100, "monday,tuesday,wednesday,thursday,friday,saturday"),
+    ("aubameyang", "52.224173181636694, 21.007969059592277", "artis", "bodybuilding", 350, "monday,wednesday,friday,sunday")
 ]
 for item in seeddata:
     cursor.execute("""
@@ -59,10 +60,25 @@ else:
     #Convert query result into dictionary 
     column_names = ["username", "coords", "membership", "style", "biglifttotal", "schedule"]
     result = {column_names[i]: result[i] for i in range(len(column_names))}
-    possible_gymbros = cursor.execute("""
-    SELECT * FROM users
-    WHERE membership = ? AND style = ? AND username <> ?
-    """, [ result["membership"], result["style"], result["username"] ]).fetchall()
+
+    #List possible gymbros sorted by different factors:
+    sorting_factor = input("""How do you want to sort your matches?
+    Enter 'big lift total' to sort by how similar your strength level is
+    Enter 'location' to sort by how close you are physically
+    Enter 'schedule' to sort by the amount of scheduled days you have in common
+    """)
+    #Splice condition into query based on chosen factor
+    if sorting_factor == "big lift total":
+        possible_gymbros = cursor.execute("""
+            SELECT *, Abs(biglifttotal - ?) AS strengthdiff FROM users
+            WHERE membership = ? AND style = ? AND username <> ?
+            ORDER BY strengthdiff
+        """, [ result["biglifttotal"], result["membership"], result["style"], result["username"] ]).fetchall()
+    else:
+        possible_gymbros = cursor.execute("""
+        SELECT * FROM users
+        WHERE membership = ? AND style = ? AND username <> ?
+        """, [ result["membership"], result["style"], result["username"] ]).fetchall()
     print(possible_gymbros)
 
 connection.close()
