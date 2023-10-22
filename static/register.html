@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymPal: register</title>
+</head>
+<body>
+    <form id="registrationform"></form>
+        <h1>Registration</h1>
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username">
+
+        <label for="coords">Coordinates</label>
+        <input type="text" id="coords" name="coords">
+
+        <label for="membership">Gym membership</label>
+        <select name="membership" id="membership">
+            <option value="zdrofit">Zdrofit</option>
+            <option value="totalfitness">Total Fitness</option>
+            <option value="artis">Artis</option>
+            <option value="cityfit">CityFit</option>
+            <option value="calypso">Calypso</option>
+            <option value="mcfit">McFIT</option>
+        </select>
+
+        <fieldset>
+            <legend>Pick your weightlifting style: </legend>
+            <input type="radio" name="style" id="bodybuilding" value="bodybuilding">
+            <label for="bodybuilding">Bodybuilding</label>
+            <input type="radio" name="style" id="powerlifting" value="powerlifting">
+            <label for="powerlifting">Powerlifting</label>
+            <input type="radio" name="style" id="crossfit" value="crossfit">
+            <label for="crossfit">Crossfit</label>
+            <input type="radio" name="style" id="olympic" value="olympic">
+            <label for="olympic">Olympic</label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Enter your personal records for the following:</legend>
+            <label for="deadlift">Deadlift</label>
+            <input type="number" name="deadlift" id="deadlift">
+            <label for="squat">Squat</label>
+            <input type="number" name="squat" id="squat">
+            <label for="bench">Benchpress</label>
+            <input type="number" name="bench" id="bench">
+            <label for="overhead">Overhead press</label>
+            <input type="number" name="overhead" id="overhead">
+        </fieldset>
+
+        <fieldset>
+            <legend>When do you work out?</legend>
+            <input type="checkbox" name="mon" id="mon">
+            <label for="mon">Monday</label>
+            <input type="checkbox" name="tue" id="tue">
+            <label for="tue">Tuesday</label>
+            <input type="checkbox" name="wed" id="wed">
+            <label for="wed">Wednesday</label>
+            <input type="checkbox" name="thu" id="thu">
+            <label for="thu">Thursday</label>
+            <input type="checkbox" name="fri" id="fri">
+            <label for="fri">Friday</label>
+            <input type="checkbox" name="sat" id="sat">
+            <label for="sat">Saturday</label>
+            <input type="checkbox" name="sun" id="sun">
+            <label for="sun">Sunday</label>
+        </fieldset>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
