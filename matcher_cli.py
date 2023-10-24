@@ -1,3 +1,4 @@
+#Deprecated DO NOT RUN
 import flask, sqlite3
 
 connection = sqlite3.connect("gymbros.db")

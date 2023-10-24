@@ -1,6 +1,6 @@
 import flask, sqlite3
 
-#Make and seed user database
+#Make user database
 def initialise_db():
     connection = sqlite3.connect("gymbros.db")
     cursor = connection.cursor()
@@ -12,7 +12,10 @@ def initialise_db():
             coords TEXT,
             membership TEXT,
             style TEXT,
-            biglifttotal INTEGER,
+            deadlift INTEGER,
+            squat INTEGER,
+            bench INTEGER,
+            overhead INTEGER,
             schedule TEXT
         )
     """)
@@ -57,16 +60,10 @@ def login():
 @app.route("/register", methods = ["GET"])
 def register():
     connection = sqlite3.connect("gymbros.db")
-    cursor = connecion.cursor()
+    cursor = connection.cursor()
 
     #Input addresses like /userinfo?username=bob&style=epic
     username = flask.request.args.get("username")
     style = flask.request.args.get("style")
 
-    result = cursor.execute("""
-        SELECT * FROM gymbros
-        WHERE username = ?
-    """, [username])
-
-    if result is None:
-        return "unregistered"
+    

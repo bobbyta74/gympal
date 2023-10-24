@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymPal: register</title>
+    <script src="script.js" defer></script>
 </head>
 <body>
     <form id="registrationform"></form>
@@ -47,33 +48,33 @@
         <fieldset>
             <legend>Enter your personal records for the following:</legend>
             <label for="deadlift">Deadlift</label>
-            <input type="number" name="deadlift" id="deadlift">
+            <input type="number" min="0" name="deadlift" id="deadlift">
             <label for="squat">Squat</label>
-            <input type="number" name="squat" id="squat">
+            <input type="number" min="0" name="squat" id="squat">
             <label for="bench">Benchpress</label>
-            <input type="number" name="bench" id="bench">
+            <input type="number" min="0" name="bench" id="bench">
             <label for="overhead">Overhead press</label>
-            <input type="number" name="overhead" id="overhead">
+            <input type="number" min="0" name="overhead" id="overhead">
         </fieldset>
 
-        <fieldset>
+        <fieldset id="scheduleset">
             <legend>When do you work out?</legend>
-            <input type="checkbox" name="mon" id="mon">
+            <input type="checkbox" name="Monday" id="mon">
             <label for="mon">Monday</label>
-            <input type="checkbox" name="tue" id="tue">
+            <input type="checkbox" name="Tuesday" id="tue">
             <label for="tue">Tuesday</label>
-            <input type="checkbox" name="wed" id="wed">
+            <input type="checkbox" name="Wednesday" id="wed">
             <label for="wed">Wednesday</label>
-            <input type="checkbox" name="thu" id="thu">
+            <input type="checkbox" name="Thursday" id="thu">
             <label for="thu">Thursday</label>
-            <input type="checkbox" name="fri" id="fri">
+            <input type="checkbox" name="Friday" id="fri">
             <label for="fri">Friday</label>
-            <input type="checkbox" name="sat" id="sat">
+            <input type="checkbox" name="Saturday" id="sat">
             <label for="sat">Saturday</label>
-            <input type="checkbox" name="sun" id="sun">
+            <input type="checkbox" name="Sunday" id="sun">
             <label for="sun">Sunday</label>
         </fieldset>
-        <button type="submit">Submit</button>
+        <button type="submit" id="submitregister">Submit</button>
     </form>
 </body>
 </html>
