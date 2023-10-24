@@ -8,21 +8,29 @@
 <body>
     <form id="registrationform"></form>
         <h1>Registration</h1>
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username">
+        <fieldset>
+            <legend>Account details</legend>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username">
+            <label for="pwd">Password</label>
+            <input type="text" id="pwd">
+        </fieldset>
 
-        <label for="coords">Coordinates</label>
-        <input type="text" id="coords" name="coords">
+        <fieldset>
+            <legend>Location info</legend>
+            <label for="coords">Coordinates</label>
+            <input type="text" id="coords" name="coords">
 
-        <label for="membership">Gym membership</label>
-        <select name="membership" id="membership">
-            <option value="zdrofit">Zdrofit</option>
-            <option value="totalfitness">Total Fitness</option>
-            <option value="artis">Artis</option>
-            <option value="cityfit">CityFit</option>
-            <option value="calypso">Calypso</option>
-            <option value="mcfit">McFIT</option>
-        </select>
+            <label for="membership">Gym membership</label>
+            <select name="membership" id="membership">
+                <option value="zdrofit">Zdrofit</option>
+                <option value="totalfitness">Total Fitness</option>
+                <option value="artis">Artis</option>
+                <option value="cityfit">CityFit</option>
+                <option value="calypso">Calypso</option>
+                <option value="mcfit">McFIT</option>
+            </select>
+        </fieldset>
 
         <fieldset>
             <legend>Pick your weightlifting style: </legend>
