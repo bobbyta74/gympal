@@ -8,6 +8,7 @@ def initialise_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users(
             username TEXT PRIMARY KEY,
+            password TEXT,
             coords TEXT,
             membership TEXT,
             style TEXT,
@@ -34,12 +35,13 @@ def login():
 
     #Request username from titlebar (e.g. login?username=ronniepickering)
     username = flask.request.args.get("username")
+    password = flask.request.args.get("password")
 
     result = cursor.execute("""
         SELECT * FROM users
         WHERE username = ?
     """, [ username ]).fetchone()
-    if result != None:
+    if result != None and password == result[1]:
         return {
             "type": "success"
         }
