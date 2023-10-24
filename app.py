@@ -54,9 +54,6 @@ def login():
         }
 
 
-
-    
-
 @app.route("/register", methods = ["GET"])
 def register():
     connection = sqlite3.connect("gymbros.db")
@@ -64,6 +61,16 @@ def register():
 
     #Input addresses like /userinfo?username=bob&style=epic
     username = flask.request.args.get("username")
+    password = flask.request.args.get("pwd")
+    coords = flask.request.args.get("coords")
+    membership = flask.request.args.get("membership")
     style = flask.request.args.get("style")
+    deadlift = flask.request.args.get("deadlift")
+    squat = flask.request.args.get("squat")
+    bench = flask.request.args.get("bench")
+    overhead = flask.request.args.get("overhead")
+    schedule = flask.request.args.get("schedule")
+
+    
 
     

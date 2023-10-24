@@ -33,12 +33,14 @@ if (submitregister) {
                 myschedule += i.name + ",";
             }
         }
+        //Remove end comma from string
         myschedule = myschedule.slice(0, -1);
 
-        //Check which style is selected and set mystyle to that
-        let mystyle = "";
-        //CONTINUE THIS ONE
+        //Check which style radio button is selected and set style to that
+        let style = document.querySelector("input[name='style']:checked").getAttribute("id");
+
+        const formvalid = username.value.trim().length > 0 && pwd.value.trim().length > 0;
         
-        let response = await window.fetch(`/register?username=${username.value.trim()}&pwd=${pwd.value}&coords=${coords.value.trim()}&membership=${membership.value}&style=${mystyle}&deadlift=${deadlift.value}&squat=${squat.value}&bench=${bench.value}&&overhead=${overhead.value}`)
+        let response = await window.fetch(`/register?username=${username.value.trim()}&pwd=${pwd.value}&coords=${coords.value.trim()}&membership=${membership.value}&style=${style}&deadlift=${deadlift.value}&squat=${squat.value}&bench=${bench.value}&&overhead=${overhead.value}`)
     })
 }
