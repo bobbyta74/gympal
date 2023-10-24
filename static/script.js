@@ -36,11 +36,32 @@ if (submitregister) {
         //Remove end comma from string
         myschedule = myschedule.slice(0, -1);
 
-        //Check which style radio button is selected and set style to that
-        let style = document.querySelector("input[name='style']:checked").getAttribute("id");
+        //Check which style radio button (if any) is selected and set style to that
+        let style;
+        try {
+            style = document.querySelector("input[name='style']:checked").getAttribute("id");
+        } catch {
+            
+        }
 
-        const formvalid = username.value.trim().length > 0 && pwd.value.trim().length > 0;
+        //Validate coordinates (2 space-separated decimals, latitude between +-90 and longitude between +-180)
+        let coordinateregex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?) *[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/gm;
+
+        //Expression validating all inputs
+        const formvalid = username.value.trim().length > 0 && pwd.value.trim().length > 0 && coordinateregex.test(coords.value.trim()) && style && Number(deadlift.value) > 0 && Number(squat.value) > 0 && Number(bench.value) > 0 && Number(overhead.value) > 0 && myschedule != "";
         
-        let response = await window.fetch(`/register?username=${username.value.trim()}&pwd=${pwd.value}&coords=${coords.value.trim()}&membership=${membership.value}&style=${style}&deadlift=${deadlift.value}&squat=${squat.value}&bench=${bench.value}&&overhead=${overhead.value}`)
+        if (formvalid) {
+            msg.textContent = "";
+            let response = await window.fetch(`/register?username=${username.value.trim()}&pwd=${pwd.value}&coords=${coords.value.trim()}&membership=${membership.value}&style=${style}&deadlift=${deadlift.value}&squat=${squat.value}&bench=${bench.value}&&overhead=${overhead.value}&schedule=${myschedule}`);
+            response = await response.json()
+
+            if (response.usernametaken) {
+                msg.textContent = "Username taken, try another"
+            } else {
+                msg.textContent = "Registration successful"
+            }
+        } else {
+            msg.textContent = "Registration details invalid";
+        }
     })
 }

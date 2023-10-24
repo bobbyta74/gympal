@@ -71,6 +71,26 @@ def register():
     overhead = flask.request.args.get("overhead")
     schedule = flask.request.args.get("schedule")
 
-    
+    #Check if username is registered already
+    result = cursor.execute("""
+        SELECT * FROM users
+        WHERE username = ?
+    """, [ username ]).fetchone()
 
-    
+    #If username exists in database, pause registration 
+    if result:
+        return {
+            "usernametaken": True
+        }
+    #Otherwise enter user's details into database
+    else:
+        #Insert flask.requests into new database record
+        cursor.execute("""
+            INSERT INTO users(username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, [username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule])
+        connection.commit()
+        connection.close()
+        return {
+            "usernametaken": False
+        }
