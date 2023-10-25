@@ -26,6 +26,7 @@ def initialise_db():
 initialise_db()
 
 app = flask.Flask(__name__)
+app.secret_key = 'x\xed9\xa4P\xf9\x1b\xea\xb5\x94\xc4\x90}\x7f\xd6\xb3'
 
 @app.route("/")
 def front():
@@ -45,6 +46,8 @@ def login():
         WHERE username = ?
     """, [ username ]).fetchone()
     if result != None and password == result[1]:
+        #Save username between routes (for use in other sites)
+        flask.session["username"] = username
         return {
             "type": "success"
         }
@@ -91,6 +94,14 @@ def register():
         """, [username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule])
         connection.commit()
         connection.close()
+        #Save username between routes (for use in other sites)
+        flask.session["username"] = username
         return {
             "usernametaken": False
         }
+
+@app.route("/homepage", methods = ["GET"])
+def homepage():
+    return {
+        "username": str(flask.session["username"])
+    }

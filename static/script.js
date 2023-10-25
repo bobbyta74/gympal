@@ -1,7 +1,8 @@
 //Using if statements allow me to use the same script for different pages
 //Avoids error: x is undefined
-submitlogin = document.querySelector("#submitlogin");
-//If submitlogin exists on this page, attempt login
+
+//login.html
+let submitlogin = document.querySelector("#submitlogin");
 if (submitlogin) {
     submitlogin.addEventListener("click", async function(event) {
         //Avoid refreshing page
@@ -9,10 +10,10 @@ if (submitlogin) {
         //Take username and password from input fields, send to app.py and wait for it to respond
         let response = await window.fetch(`/login?username=${username.value.trim()}&password=${pwd.value}`);
         response = await response.json()
-        console.log(response)
         if (response.type == "success") {
             msg.textContent = "Login successful";
             console.log("Login successful")
+            window.location.href = "/static/homepage.html"
         } else if (response.type == "failure") {
             msg.textContent = "Login failed";
         } else {
@@ -21,7 +22,10 @@ if (submitlogin) {
     })
 }
 
-submitregister = document.querySelector("#submitregister")
+
+
+//register.html
+let submitregister = document.querySelector("#submitregister")
 if (submitregister) {
     submitregister.addEventListener("click", async function(event) {
         //Prevent reload
@@ -45,6 +49,7 @@ if (submitregister) {
         }
 
         //Validate coordinates (2 space-separated decimals, latitude between +-90 and longitude between +-180)
+        //Source https://stackoverflow.com/a/18690202 (except replaced ",\s" with single space " ")
         let coordinateregex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?) *[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/gm;
 
         //Expression validating all inputs
@@ -59,9 +64,28 @@ if (submitregister) {
                 msg.textContent = "Username taken, try another"
             } else {
                 msg.textContent = "Registration successful"
+                window.location.href = "/static/homepage.html"
             }
         } else {
             msg.textContent = "Registration details invalid";
         }
     })
+}
+
+
+
+//homepage.html
+let welcomemsg = document.querySelector("#welcomemsg");
+
+//Needs to be async, so made a function for it
+async function displayWelcomeMsg() {
+    console.log("welcomemsg thingy up and running")
+    let response = await window.fetch("/homepage");
+    response = await response.json();
+    console.log(response.username)
+    welcomemsg.textContent = "Welcome, " + response.username;
+}
+
+if (welcomemsg) {
+    displayWelcomeMsg();
 }
