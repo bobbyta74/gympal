@@ -82,10 +82,27 @@ async function displayWelcomeMsg() {
     console.log("welcomemsg thingy up and running")
     let response = await window.fetch("/homepage");
     response = await response.json();
-    console.log(response.username)
     welcomemsg.textContent = "Welcome, " + response.username;
+    console.log(response.username)
 }
-
 if (welcomemsg) {
     displayWelcomeMsg();
+}
+
+
+
+//matches.html
+let sortingcriterion = document.querySelector("#sortingcriterion")
+if (sortingcriterion) {
+    sortingcriterion.addEventListener("input", async function() {
+        response = await window.fetch(`/matches?crit=${sortingcriterion.value}`);
+        response = await response.json();
+        //Turn list into legible format
+        let matchesformatted = "";
+        for (let item of response.matches) {
+            matchesformatted += String(item) + "<br>";
+            console.log(matchesformatted)
+        }
+        matchbox.innerHTML = matchesformatted;
+    })
 }

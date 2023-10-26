@@ -34,6 +34,8 @@ def front():
 
 @app.route("/login", methods = ["GET"])
 def login():
+    #Log in as existing user
+
     connection = sqlite3.connect("gymbros.db")
     cursor = connection.cursor()
 
@@ -59,6 +61,8 @@ def login():
 
 @app.route("/register", methods = ["GET"])
 def register():
+    #Register new user
+
     connection = sqlite3.connect("gymbros.db")
     cursor = connection.cursor()
 
@@ -103,5 +107,69 @@ def register():
 @app.route("/homepage", methods = ["GET"])
 def homepage():
     return {
-        "username": str(flask.session["username"])
+        "username": flask.session["username"]
+    }
+
+@app.route("/matches", methods=["GET"])
+def matches():
+    #Find gymbros that satisfy criteria
+
+    connection = sqlite3.connect("gymbros.db")
+    cursor = connection.cursor()
+
+    #Get current user's record for values of sorting criteria
+    username = flask.session["username"]
+    result = cursor.execute("""
+        SELECT * FROM users
+        WHERE username = ?
+    """, [ username ]).fetchone()
+
+    #Convert query result from tuple into dictionary (easier to read/remmenber key names than indexes)
+    column_names = ["username", "password", "coords", "membership", "style", "deadlift", "squat", "bench", "overhead", "schedule"]
+    result = {column_names[i]: result[i] for i in range(len(column_names))}
+
+    sorting_factor = flask.request.args.get("crit")
+    possible_gymbros = "none"
+
+    #Splice condition into query based on chosen factor
+    if sorting_factor == "strength":
+        #Find difference between big lift total of user and others, sort ascending (from most to least similar)
+        possible_gymbros = cursor.execute("""
+            SELECT *, Abs(deadlift+squat+bench+overhead - ?) AS strengthdiff FROM users
+            WHERE membership = ? AND style = ? AND username <> ?
+            ORDER BY strengthdiff
+        """, [ (result["deadlift"]+result["squat"]+result["bench"]+result["overhead"]), result["membership"], result["style"], username ]).fetchall()
+    elif sorting_factor == "location":
+        #INSERT HAVERSINE FORMULA HERE
+        possible_gymbros = cursor.execute("""
+        SELECT * FROM users
+        WHERE membership = ? AND style = ? AND username <> ?
+        """, [ result["membership"], result["style"], result["username"] ]).fetchall()
+    elif sorting_factor == "schedule":
+        #Have to manipulate strings to compare here, can't be done in SQL only :(((
+        def schedulecoverage(myschedule, otherschedule):
+            #Turn both comma-separated strings into lists
+            a = myschedule.split(",")
+            origlength = len(a)
+            b = otherschedule.split(",")
+            #Try to subtract every day in person b's schedule from person a's schedule, if every day is left then there is no coverage
+            for day in b:
+                try:
+                    a.remove(day)
+                except:
+                    pass
+            return int(100 - (len(a)/origlength*100))
+        #All possible gymbros (unsorted)
+        possible_gymbros = cursor.execute("""
+        SELECT * FROM users
+        WHERE membership = ? AND style = ? AND username <> ?
+        """, [ result["membership"], result["style"], result["username"] ]).fetchall()
+        for gymbro in possible_gymbros:
+            #Add schedule coverage to each gymbro's record tuple (in the query result, not in the actual table)
+            gymbro += (schedulecoverage(result["schedule"], gymbro[9]),)
+        #Sort the query result by gymbros' schedule coverages
+        possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=False)
+    
+    return {
+        "matches": possible_gymbros
     }
