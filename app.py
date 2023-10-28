@@ -16,7 +16,8 @@ def initialise_db():
             squat INTEGER,
             bench INTEGER,
             overhead INTEGER,
-            schedule TEXT
+            schedule TEXT,
+            monthsvolume INTEGER
         )
     """)
 
@@ -93,8 +94,8 @@ def register():
     else:
         #Insert flask.requests into new database record
         cursor.execute("""
-            INSERT INTO users(username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users(username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule, monthsvolume)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
         """, [username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule])
         connection.commit()
         connection.close()
@@ -172,4 +173,27 @@ def matches():
     
     return {
         "matches": possible_gymbros
+    }
+
+import json
+@app.route("/workout", methods=["GET"])
+def workout():
+    #Update records and month's volume 
+
+    connection = sqlite3.connect("gymbros.db")
+    cursor = connection.cursor()
+
+    sessionrecords = json.loads(flask.request.args.get("records"))
+    sessionvolume = flask.request.args.get("volume")
+
+    #Get current user's record to add data
+    username = flask.session["username"]
+    result = cursor.execute("""
+        SELECT * FROM users
+        WHERE username = ?
+    """, [ username ]).fetchone()
+
+    
+    return {
+        "data": sessionrecords["deadlift"]
     }

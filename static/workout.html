@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymPal: workout session</title>
     <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
     <style>
         fieldset, #textinputs>div {
             display:flex;
@@ -46,10 +47,15 @@
                 <input type="checkbox" id="overhead?">
                 <label for="overhead?">Overhead press</label>
             </div>
+
+            <div>
+                <input type="checkbox" id="otherlift?">
+                <label for="otherlift?">Other</label>
+            </div>
         </fieldset>
 
         <fieldset id="textinputs">
-            <legend>Enter a comma-separated list of all your sets</legend>
+            <legend>Enter a comma-separated list of all your sets in the form [reps x weight]</legend>
             <div id="deadliftdiv">
                 <label for="deadlift">Deadlift</label>
                 <input type="text" id="deadlift">
@@ -68,6 +74,11 @@
             <div id="overheaddiv">
                 <label for="overhead">Overhead</label>
                 <input type="text" id="overhead">
+            </div>
+
+            <div id="otherliftdiv">
+                <label for="otherlift">Other</label>
+                <input type="text" id="otherlift">
             </div>
 
             <button type="submit" id="submitworkout">Submit</button>

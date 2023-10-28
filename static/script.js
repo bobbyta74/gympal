@@ -1,6 +1,15 @@
 //Using if statements allow me to use the same script for different pages
 //Avoids error: x is undefined
 
+//universal
+//Reset checkboxes on page load (because they stay checked for some reason?)
+let allcheckboxes = document.querySelectorAll("input[type='checkbox']");
+addEventListener("load", function() {
+    for (let i of allcheckboxes) {
+        i.checked = false;
+    }
+})
+
 //login.html
 let submitlogin = document.querySelector("#submitlogin");
 if (submitlogin) {
@@ -113,6 +122,7 @@ if (sortingcriterion) {
 let workoutform = document.querySelector("#workoutform")
 
 if (workoutform) {
+    //Display of form
     let checkboxlist = document.querySelectorAll("input[type='checkbox']");
     let howmanychecked = 0;
     for (let mycheckbox of checkboxlist) {
@@ -129,6 +139,7 @@ if (workoutform) {
                 howmanychecked -= 1;
                 correspondingdiv.style.visibility = "hidden";
             }
+            console.log(howmanychecked);
             //Only show text inputs if at least 1 checkbox is selected
             if (howmanychecked > 0) {
                 textinputs.style.visibility = "visible";
@@ -137,4 +148,41 @@ if (workoutform) {
             }
         })
     }
+    //Actual functionality of form
+    submitworkout.addEventListener("click", async function(event) {
+        event.preventDefault();
+        let sessionrecords = {};
+        let sessionvolume = 0;
+
+        for (let lift of ["deadlift", "squat", "bench", "overhead", "otherlift"]) {
+            //String converted to list of sets (e.g. [3x80,4x90])
+            let allsets = document.querySelector(`#${lift}`).value;
+            allsets = allsets.split(",");
+            //Store all weights lifted (e.g. [80, 90])
+            let allweights = [];
+            for (let set of allsets) {
+                //Push only weight to array allweights
+                allweights.push(set.split("x")[1]);
+
+                //Add volume of each set to total weight lifted in session (e.g. 3x80 = 240)
+                //if statement to avoid adding undefined to sessionvolume (and ending up with sessionvolume=NaN) when input is empty
+                if (eval(set.replace("x", "*"))) {
+                    sessionvolume += eval(set.replace("x", "*"));
+                }
+            }
+            //Find largest item in allweights and save as session record for that lift (e.g. deadlift: 90)
+            //Has to be converted to integer because it's a string, but this can be done last for efficiency because JS evaluates numeric strings as numbers
+            sessionrecords[lift] = Number(allweights.reduce((max, current) => (current > max ? current : max), allweights[0]));
+            
+            //Avoid null values in object
+            if (!sessionrecords[lift]) {
+                sessionrecords[lift] = -1;
+            }
+        }
+
+        let response = await window.fetch(`/workout?records=${JSON.stringify(sessionrecords)}&volume=${sessionvolume}`);
+        response = await response.json();
+
+        console.log(response)
+    })
 }
