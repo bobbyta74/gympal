@@ -106,3 +106,35 @@ if (sortingcriterion) {
         matchbox.innerHTML = matchesformatted;
     })
 }
+
+
+
+//workout.html
+let workoutform = document.querySelector("#workoutform")
+
+if (workoutform) {
+    let checkboxlist = document.querySelectorAll("input[type='checkbox']");
+    let howmanychecked = 0;
+    for (let mycheckbox of checkboxlist) {
+        mycheckbox.addEventListener("input", function() {
+            //Convert checkbox id to container div id
+            //E.g. deadlift? -> deadliftdiv
+            let correspondingdiv = document.querySelector(`#${mycheckbox.getAttribute("id").slice(0,-1)+"div"}`)
+            
+            //Add/subtract checked box counter and toggle visibility
+            if (mycheckbox.checked) {
+                howmanychecked += 1;
+                correspondingdiv.style.visibility = "visible";
+            } else {
+                howmanychecked -= 1;
+                correspondingdiv.style.visibility = "hidden";
+            }
+            //Only show text inputs if at least 1 checkbox is selected
+            if (howmanychecked > 0) {
+                textinputs.style.visibility = "visible";
+            } else {
+                textinputs.style.visibility = "hidden";
+            }
+        })
+    }
+}

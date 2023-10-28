@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymPal: workout session</title>
+    <script src="script.js" defer></script>
+    <style>
+        fieldset, #textinputs>div {
+            display:flex;
+            flex-direction:column;
+        }
+
+        input[type="text"] {
+            width:200px;
+        }
+
+        #textinputs, #textinputs>div {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <h1>GymPal</h1>
+    <h1>Workout</h1>
+
+    <form id="workoutform">
+        <fieldset id="checkboxes">
+            <legend>Which exercise(s) did you do?</legend>
+            <div>
+                <input type="checkbox" id="deadlift?">
+                <label for="deadlift?">Deadlift</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="squat?">
+                <label for="squat?">Squat</label>
+            </div>
+
+            <div>
+                <input type="checkbox" id="bench?">
+                <label for="bench?">Benchpress</label>
+            </div>
+            
+            <div>
+                <input type="checkbox" id="overhead?">
+                <label for="overhead?">Overhead press</label>
+            </div>
+        </fieldset>
+
+        <fieldset id="textinputs">
+            <legend>Enter a comma-separated list of all your sets</legend>
+            <div id="deadliftdiv">
+                <label for="deadlift">Deadlift</label>
+                <input type="text" id="deadlift">
+            </div>
+            
+            <div id="squatdiv">
+                <label for="squat">Squat</label>
+                <input type="text" id="squat">
+            </div>
+
+            <div id="benchdiv">
+                <label for="bench">Benchpress</label>
+                <input type="text" id="bench">
+            </div>
+
+            <div id="overheaddiv">
+                <label for="overhead">Overhead</label>
+                <input type="text" id="overhead">
+            </div>
+
+            <button type="submit" id="submitworkout">Submit</button>
+        </fieldset>
+
+    </form>
+</body>
+</html>
