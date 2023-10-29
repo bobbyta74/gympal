@@ -5,15 +5,46 @@ body {
 }
 
 header {
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    z-index:100;
+    border:5px solid red;
     display:flex;
-    justify-content:space-around;
 }
+
+header>div {
+    flex:1;
+}
+
 header>h1 {
     font-family:"Bebas Neue", sans-serif;
     font-size:4rem;
     margin:0;
+    flex:1;
+    text-align:center;
+}
+
+#everythingelseintheheader {
+    display:flex;
+    justify-content:right;
+    gap:10px;
+}
+
+#everythingelseintheheader > a {
+    align-self:center;
+}
+
+.content {
+    margin-top:4.5rem;
 }
 
 button {
     width:60px;
+}
+
+a {
+    text-decoration:none;
+    font-weight:800;
 }

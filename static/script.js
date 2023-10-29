@@ -19,6 +19,31 @@ addEventListener("load", function() {
     }
 })
 
+//all pages once logged in
+let dropdownbtn = document.querySelector("#dropdownbtn");
+//Show username in dropdown menu in navbar
+//Needs to be async, so made a function for it
+async function displayUsername() {
+    let response = await window.fetch("/username");
+    response = await response.json();
+    if (response.username != false) {
+        dropdownbtn.textContent = response.username;
+    } else {
+        //If server doesn't return a username, the user has logged out
+        window.location.href="/static/login.html";
+    }
+}
+if (dropdownbtn) {
+    displayUsername();
+    logout.addEventListener("click", async function() {
+        //Delete current username
+        let response = await window.fetch("/logout");
+        window.location.href="/static/login.html";
+    })
+}
+
+
+
 //login.html
 let submitlogin = document.querySelector("#submitlogin");
 if (submitlogin) {
@@ -97,10 +122,9 @@ let welcomemsg = document.querySelector("#welcomemsg");
 
 //Needs to be async, so made a function for it
 async function displayWelcomeMsg() {
-    let response = await window.fetch("/homepage");
+    let response = await window.fetch("/username");
     response = await response.json();
     welcomemsg.textContent = "Welcome, " + response.username;
-    console.log(response.username)
 }
 if (welcomemsg) {
     displayWelcomeMsg();
@@ -228,8 +252,9 @@ if (workoutform) {
             if (response["new records"].length > 0) {
                 msg.innerHTML = "Congrats, dude, you totally, like, crushed it with new personal record(s) in: " + response["new records"] + "! <br>Radical!"
             } else {
-                msg.textContent = "No new records today, bummer. Keep pushing, bro!"
+                msg.textContent = "No new records today, major bummer. Keep pushing, bro!"
             }
+            gohome2.style.visibility = "visible";
         }
     })
 }

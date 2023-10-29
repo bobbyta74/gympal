@@ -6,6 +6,7 @@
     <title>GymPal: home</title>
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dropdown.css">
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -18,24 +19,38 @@
 </head>
 <body>
     <header>
+        <div></div>
         <h1>GymPal</h1>
+        <div id="everythingelseintheheader">
+            <a href="homepage.html" id="gohome">Home</a>
+            <div id="dropdown">
+                <button id="dropdownbtn"></button>
+                <div id="dropdown-content">
+                    <a href="goprofile" id="profile">Profile</a>
+                    <a href="settings.html" id="gosettings">Settings</a>
+                    <button id="logout">Log out</button>
+                </div>
+            </div>
+        </div>
     </header>
-    <h1>Home</h1>
-    <h2 id="welcomemsg"></h2>
+    <div class="content">
+        <h1>Home</h1>
+        <h2 id="welcomemsg"></h2>
 
-    <div>
-        <a href="matches.html">Matches</a>
-        <p>Browse potential gymbros</p>
-    </div>
+        <div>
+            <a href="matches.html">Matches</a>
+            <p>Browse potential gymbros</p>
+        </div>
 
-    <div>
-        <a href="leaderboard.html">Leaderboard</a>
-        <p>Compare yourself to bros and the world</p>
-    </div>
+        <div>
+            <a href="leaderboard.html">Leaderboard</a>
+            <p>Compare yourself to bros and the world</p>
+        </div>
 
-    <div>
-        <a href="workout.html">Workout</a>
-        <p>Enter the deets from your current workout, bro</p>
+        <div>
+            <a href="workout.html">Workout</a>
+            <p>Enter the deets from your current workout, bro</p>
+        </div>
     </div>
 </body>
 </html>

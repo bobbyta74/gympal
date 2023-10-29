@@ -106,11 +106,21 @@ def register():
             "usernametaken": False
         }
 
-@app.route("/homepage", methods = ["GET"])
-def homepage():
-    return {
-        "username": flask.session["username"]
-    }
+@app.route("/username", methods=["GET"])
+def username():
+    if "username" in flask.session:
+        return {
+            "username": flask.session["username"]
+        }
+    else:
+        return {
+            "username": False
+        }
+
+@app.route("/logout")
+def logout():
+    del flask.session["username"]
+    return flask.redirect("/static/login.html")
 
 @app.route("/matches", methods=["GET"])
 def matches():
@@ -220,7 +230,7 @@ def workout():
 
     connection.commit()
     connection.close()
-    
+
     return {
         "new records": newrecords[:-2]
     }
