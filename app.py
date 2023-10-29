@@ -17,7 +17,8 @@ def initialise_db():
             bench INTEGER,
             overhead INTEGER,
             schedule TEXT,
-            monthsvolume INTEGER
+            monthsvolume INTEGER,
+            monthstimespent INTEGER
         )
     """)
 
@@ -94,8 +95,8 @@ def register():
     else:
         #Insert flask.requests into new database record
         cursor.execute("""
-            INSERT INTO users(username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule, monthsvolume)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+            INSERT INTO users(username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule, monthsvolume, monthstimespent)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)
         """, [username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule])
         connection.commit()
         connection.close()
@@ -126,6 +127,7 @@ def matches():
     """, [ username ]).fetchone()
 
     #Convert query result from tuple into dictionary (easier to read/remmenber key names than indexes)
+    #Don't need month's volume and time spent, so not included
     column_names = ["username", "password", "coords", "membership", "style", "deadlift", "squat", "bench", "overhead", "schedule"]
     result = {column_names[i]: result[i] for i in range(len(column_names))}
 
@@ -184,7 +186,8 @@ def workout():
     cursor = connection.cursor()
 
     sessionrecords = json.loads(flask.request.args.get("records"))
-    sessionvolume = flask.request.args.get("volume")
+    sessionvolume = int(flask.request.args.get("volume"))
+    sessionduration = int(flask.request.args.get("timespent"))
 
     #Get current user's record to add data
     username = flask.session["username"]
@@ -192,8 +195,32 @@ def workout():
         SELECT * FROM users
         WHERE username = ?
     """, [ username ]).fetchone()
+    #Convert to dictionary for easier access
+    column_names = ["username", "password", "coords", "membership", "style", "deadlift", "squat", "bench", "overhead", "schedule", "monthsvolume", "monthstimespent"]
+    result = {column_names[i]: result[i] for i in range(len(column_names))}
 
+    #Update PR if new
+    newrecords = ""
+    for lift in ["deadlift", "squat", "bench", "overhead"]:
+        sessionrecords[lift] = int(sessionrecords[lift])
+        if sessionrecords[lift] > result[lift]:
+            cursor.execute(f"""
+                UPDATE users
+                SET {lift} = ?
+                WHERE username = ?
+            """, [ sessionrecords[lift], username ])
+            newrecords += lift + ", " 
+
+    #Add session volume and time spent to month's values
+    cursor.execute("""
+        UPDATE users
+        SET monthsvolume = ?, monthstimespent = ?
+        WHERE username = ?
+    """, [ (result["monthsvolume"] + sessionvolume), (result["monthstimespent"] + sessionduration), username ])
+
+    connection.commit()
+    connection.close()
     
     return {
-        "data": sessionrecords["deadlift"]
+        "new records": newrecords[:-2]
     }

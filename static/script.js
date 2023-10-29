@@ -2,11 +2,20 @@
 //Avoids error: x is undefined
 
 //universal
-//Reset checkboxes on page load (because they stay checked for some reason?)
+//Reset all inputs (they persist for some reason?)
 let allcheckboxes = document.querySelectorAll("input[type='checkbox']");
+//Can't umbrella-select all inputs because dropdowns/radio buttons will be broken
+let alltextinputs = document.querySelectorAll("input[type='text']");
+let allnuminputs = document.querySelectorAll("input[type='text']");
 addEventListener("load", function() {
     for (let i of allcheckboxes) {
         i.checked = false;
+    }
+    for (let i of alltextinputs) {
+        i.value = "";
+    }
+    for (let i of allnuminputs) {
+        i.value = "";
     }
 })
 
@@ -88,7 +97,6 @@ let welcomemsg = document.querySelector("#welcomemsg");
 
 //Needs to be async, so made a function for it
 async function displayWelcomeMsg() {
-    console.log("welcomemsg thingy up and running")
     let response = await window.fetch("/homepage");
     response = await response.json();
     welcomemsg.textContent = "Welcome, " + response.username;
@@ -139,7 +147,6 @@ if (workoutform) {
                 howmanychecked -= 1;
                 correspondingdiv.style.visibility = "hidden";
             }
-            console.log(howmanychecked);
             //Only show text inputs if at least 1 checkbox is selected
             if (howmanychecked > 0) {
                 textinputs.style.visibility = "visible";
@@ -148,9 +155,38 @@ if (workoutform) {
             }
         })
     }
+
+    //Timer button functionality
+    let timerbutton = document.querySelector("button#timer");
+    let timespent = 0; //seconds, convert later to avoid abuse of rounding up minute
+    let starttime = -1;
+    let clickcounter = 0;
+    let timerstopped = true;
+    timerbutton.addEventListener("click", function(event) {
+        //Algorithmic thinking
+        event.preventDefault();
+        clickcounter += 1;
+        //Get current time
+        let now = new Date().getTime();
+        if (clickcounter % 2 == 1) {
+            //Odd clicks start the timer
+            starttime = now;
+            timerstopped = false;
+            timerbutton.textContent = "Stop timer"
+        } else {
+            //Even clicks end timer and add timediff to timespent
+            let timediff = (now - starttime)/1000;
+            timespent += timediff;
+            timerstopped = true;
+            console.log(timespent);
+            timerbutton.textContent = "Resume timer"
+        }
+    })
+
     //Actual functionality of form
     submitworkout.addEventListener("click", async function(event) {
         event.preventDefault();
+        msg.textContent = "";
         let sessionrecords = {};
         let sessionvolume = 0;
 
@@ -180,9 +216,20 @@ if (workoutform) {
             }
         }
 
-        let response = await window.fetch(`/workout?records=${JSON.stringify(sessionrecords)}&volume=${sessionvolume}`);
-        response = await response.json();
+        //Convert timespent from seconds to minutes, bump up by 1 to include incomplete mins (e.g. 40m50s = 41m)
+        timespent = Math.floor(timespent/60) + 1;
 
-        console.log(response)
+        if (!timerstopped) {
+            msg.textContent = "Hey broski, stop the timer, man!"
+        } else {
+            let response = await window.fetch(`/workout?records=${JSON.stringify(sessionrecords)}&volume=${sessionvolume}&timespent=${timespent}`);
+            response = await response.json();
+            
+            if (response["new records"].length > 0) {
+                msg.innerHTML = "Congrats, dude, you totally, like, crushed it with new personal record(s) in: " + response["new records"] + "! <br>Radical!"
+            } else {
+                msg.textContent = "No new records today, bummer. Keep pushing, bro!"
+            }
+        }
     })
 }

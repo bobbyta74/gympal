@@ -12,20 +12,35 @@
             flex-direction:column;
         }
 
-        input[type="text"] {
+        input[type="text"], input[type="number"] {
             width:200px;
         }
 
         #textinputs, #textinputs>div {
             visibility: hidden;
         }
+
+        button#timer {
+            width:100px;
+        }
     </style>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato&display=swap" rel="stylesheet"> 
 </head>
 <body>
-    <h1>GymPal</h1>
+    <header>
+        <h1>GymPal</h1>
+    </header>
     <h1>Workout</h1>
 
     <form id="workoutform">
+        <fieldset>
+            <legend>Session timer</legend>
+            <button id="timer">Start timer</button>
+        </fieldset>
+
         <fieldset id="checkboxes">
             <legend>Which exercise(s) did you do?</legend>
             <div>
@@ -83,7 +98,7 @@
 
             <button type="submit" id="submitworkout">Submit</button>
         </fieldset>
-
     </form>
+    <div id="msg"></div>
 </body>
 </html>

@@ -1,3 +1,19 @@
+body {
+    font-family:"Lato", sans-serif;
+    display:flex;
+    flex-direction: column;
+}
+
+header {
+    display:flex;
+    justify-content:space-around;
+}
+header>h1 {
+    font-family:"Bebas Neue", sans-serif;
+    font-size:4rem;
+    margin:0;
+}
+
 button {
     width:60px;
 }
