@@ -175,19 +175,24 @@ def matches():
                     pass
             return int(100 - (len(a)/origlength*100))
         #All possible gymbros (unsorted)
-        possible_gymbros = cursor.execute("""
+        queried_gymbros = cursor.execute("""
         SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule
         FROM users
         WHERE membership = ? AND style = ? AND username <> ?
         """, [ result["membership"], result["style"], result["username"] ]).fetchall()
-        for gymbro in possible_gymbros:
+        possible_gymbros = []
+        for gymbro in queried_gymbros:
             #Add schedule coverage to each gymbro's record tuple (in the query result, not in the actual table)
-            gymbro += (schedulecoverage(result["schedule"], gymbro[8]),)
+            gymbro_as_list = list(gymbro)
+            gymbro_as_list.append(schedulecoverage(result["schedule"], gymbro[8]))
+            print(gymbro[0], gymbro_as_list[-1])
+            possible_gymbros.append(gymbro_as_list)
         #Sort the query result by gymbros' schedule coverages
-        possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=False)
+        possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=True)
     
     return {
-        "matches": possible_gymbros
+        "matches": possible_gymbros,
+        "criterion": sorting_factor
     }
 
 import json
