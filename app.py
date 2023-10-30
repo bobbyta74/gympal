@@ -148,14 +148,16 @@ def matches():
     if sorting_factor == "strength":
         #Find difference between big lift total of user and others, sort ascending (from most to least similar)
         possible_gymbros = cursor.execute("""
-            SELECT *, Abs(deadlift+squat+bench+overhead - ?) AS strengthdiff FROM users
+            SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule, Abs(deadlift+squat+bench+overhead - ?) AS strengthdiff 
+            FROM users
             WHERE membership = ? AND style = ? AND username <> ?
             ORDER BY strengthdiff
         """, [ (result["deadlift"]+result["squat"]+result["bench"]+result["overhead"]), result["membership"], result["style"], username ]).fetchall()
     elif sorting_factor == "location":
         #INSERT HAVERSINE FORMULA HERE
         possible_gymbros = cursor.execute("""
-        SELECT * FROM users
+        SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule 
+        FROM users
         WHERE membership = ? AND style = ? AND username <> ?
         """, [ result["membership"], result["style"], result["username"] ]).fetchall()
     elif sorting_factor == "schedule":
@@ -174,12 +176,13 @@ def matches():
             return int(100 - (len(a)/origlength*100))
         #All possible gymbros (unsorted)
         possible_gymbros = cursor.execute("""
-        SELECT * FROM users
+        SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule
+        FROM users
         WHERE membership = ? AND style = ? AND username <> ?
         """, [ result["membership"], result["style"], result["username"] ]).fetchall()
         for gymbro in possible_gymbros:
             #Add schedule coverage to each gymbro's record tuple (in the query result, not in the actual table)
-            gymbro += (schedulecoverage(result["schedule"], gymbro[9]),)
+            gymbro += (schedulecoverage(result["schedule"], gymbro[8]),)
         #Sort the query result by gymbros' schedule coverages
         possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=False)
     
@@ -233,4 +236,29 @@ def workout():
 
     return {
         "new records": newrecords[:-2]
+    }
+
+@app.route("/leaderboards", methods=["GET"])
+def leaderboards():
+    #Show all users ordered by chosen criterion
+    connection = sqlite3.connect("gymbros.db")
+    cursor = connection.cursor()
+
+    criterion = flask.request.args.get("criterion")
+    if criterion != "username":
+        result = cursor.execute(f"""
+            SELECT username, deadlift, squat, bench, overhead, (deadlift + squat) AS lowerbody, (bench + overhead) AS upperbody, (deadlift + squat + bench + overhead) AS bigtotal, monthsvolume, monthstimespent
+            FROM users
+            ORDER BY {criterion} DESC
+        """).fetchall()
+    else:
+        #Sort alphabetically by default
+        result = cursor.execute(f"""
+            SELECT username, deadlift, squat, bench, overhead, (deadlift + squat) AS lowerbody, (bench + overhead) AS upperbody, (deadlift + squat + bench + overhead) AS bigtotal, monthsvolume, monthstimespent
+            FROM users
+            ORDER BY {criterion}
+        """).fetchall()
+
+    return {
+        "data": result
     }

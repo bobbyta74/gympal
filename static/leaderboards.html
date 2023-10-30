@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymPal: matches</title>
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dropdown.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato&display=swap" rel="stylesheet"> 
+</head>
+<body>
+    <header>
+        <div></div>
+        <div id="logo">
+            <img src="icons8-gym-66.png" alt="dumbbell icon">
+            <h1>GymPal</h1>
+        </div>
+        <div id="everythingelseintheheader">
+            <a href="homepage.html" id="gohome">Home</a>
+            <div id="dropdown">
+                <button id="dropdownbtn">⏷</button>
+                <div id="dropdown-content">
+                    <a href="goprofile" id="profile">Profile</a>
+                    <a href="settings.html" id="gosettings">Settings</a>
+                    <button id="logout">Log out</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="content">
+        <h1>Leaderboards</h1>
+        <label for="sortleaderboardby">Sort by:</label>
+        <select name="sortleaderboardby" id="sortleaderboardby">
+            <option value="username" select="selected">[Select criterion]</option>
+            <option value="bigtotal">Total big lift record</option>
+            <option value="upperbody">Total upper body record</option>
+            <option value="lowerbody">Total lower body record</option>
+            <option value="deadlift">Deadlift record</option>
+            <option value="squat">Squat record</option>
+            <option value="bench">Benchpress record</option>
+            <option value="overhead">Overhead press record</option>
+            <option value="monthsvolume">Volume lifted this month</option>
+            <option value="monthstimespent">Time spent at the gym this month</option>
+        </select>
+        <table id="leaderboardtable">
+            <tr>
+                <th>Username</th>
+                <th>Deadlift</th>
+                <th>Squat</th>
+                <th>Benchpress</th>
+                <th>Overhead press</th>
+                <th>Lower body total</th>
+                <th>Upper body total</th>
+                <th>Big lift total</th>
+                <th>Volume lifted this month</th>
+                <th>Time spent at the gym this month</th>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

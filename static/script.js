@@ -27,7 +27,7 @@ async function displayUsername() {
     let response = await window.fetch("/username");
     response = await response.json();
     if (response.username != false) {
-        dropdownbtn.textContent = response.username;
+        dropdownbtn.textContent = response.username + " ⏷";
     } else {
         //If server doesn't return a username, the user has logged out
         window.location.href="/static/login.html";
@@ -142,7 +142,6 @@ if (sortingcriterion) {
         let matchesformatted = "";
         for (let item of response.matches) {
             matchesformatted += String(item) + "<br>";
-            console.log(matchesformatted)
         }
         matchbox.innerHTML = matchesformatted;
     })
@@ -255,6 +254,56 @@ if (workoutform) {
                 msg.textContent = "No new records today, major bummer. Keep pushing, bro!"
             }
             gohome2.style.visibility = "visible";
+        }
+    })
+}
+
+let sortleaderboardby = document.querySelector("#sortleaderboardby");
+if (sortleaderboardby) {
+    async function displayleaderboard() {
+        //Fetch table ordered by chosen criterion and add row of cells for every record
+        let response = await window.fetch(`/leaderboards?criterion=${sortleaderboardby.value}`);
+        response = await response.json();
+        for (let record of response.data) {
+            const newRow = leaderboardtable.insertRow();
+
+            for (let value of record) {
+                const cell = newRow.insertCell();
+                cell.textContent = value;
+            }
+        }
+    }
+    displayleaderboard();
+    sortleaderboardby.addEventListener("input", function() {
+        //Clear current table to avoid duplicates, then sort leaderboard by new criterion
+        leaderboardtable.innerHTML = `<tr>
+                                        <th>Username</th>
+                                        <th>Deadlift</th>
+                                        <th>Squat</th>
+                                        <th>Benchpress</th>
+                                        <th>Overhead press</th>
+                                        <th>Lower body total</th>
+                                        <th>Upper body total</th>
+                                        <th>Big lift total</th>
+                                        <th>Volume lifted this month</th>
+                                        <th>Time spent at the gym this month</th>
+                                    </tr>`
+        displayleaderboard();
+
+        //Highlight the sorting criterion
+        //But don't highlight if sorting by username
+        const sortingcriteria = ["", "deadlift", "squat", "bench", "overhead", "lowerbody", "upperbody", "bigtotal", "monthsvolume", "monthstimespent"];
+        let column2behighlighted = sortingcriteria.indexOf(sortleaderboardby.value);
+        let tableheadings = leaderboardtable.querySelector("tr").querySelectorAll("th");
+        tableheadings[column2behighlighted].style.backgroundColor = "blue";
+
+        //Colour rows (DOESN'T RUN???? VOLVO PLS FIX)
+        let datarows = leaderboardtable.querySelectorAll("tr:not(:first-child)");
+        for (let row of datarows) {
+            console.log("hello");
+            let cells = row.querySelectorAll("td");
+            console.log(cells[5].textContent);
+            cells[5].style.backgroundColor = "blue";
         }
     })
 }

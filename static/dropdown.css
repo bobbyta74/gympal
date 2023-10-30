@@ -1,13 +1,15 @@
 /*Used on all pages with the dropdown menu in the navbar*/
 
 #dropdownbtn {
-    background-color:#ddd;
+    background-color:inherit;
+    color:#ddd;
     padding: 16px;
     font-size: 16px;
     border: none;
     min-width:90px;
     width:auto;
     height:100%;
+    font-weight:600;
 }
 
 /*Contains links, buttons etc.*/
@@ -15,6 +17,7 @@
     position: relative;
     display: inline-block;
     width:auto;
+    background-color:inherit;
 }
 
 /*Hidden by default*/
@@ -61,5 +64,5 @@
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 #dropdown:hover #dropdownbtn {
-    filter: brightness(0.8);
+    background-color:#0d214b;
 } 
