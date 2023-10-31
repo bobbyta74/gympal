@@ -61,6 +61,7 @@ def login():
         }
 
 
+from geopy.geocoders import Nominatim
 @app.route("/register", methods = ["GET"])
 def register():
     #Register new user
@@ -71,7 +72,6 @@ def register():
     #Input addresses like /userinfo?username=bob&style=epic
     username = flask.request.args.get("username")
     password = flask.request.args.get("pwd")
-    coords = flask.request.args.get("coords")
     membership = flask.request.args.get("membership")
     style = flask.request.args.get("style")
     deadlift = flask.request.args.get("deadlift")
@@ -79,6 +79,19 @@ def register():
     bench = flask.request.args.get("bench")
     overhead = flask.request.args.get("overhead")
     schedule = flask.request.args.get("schedule")
+
+    #Convert address to standardised 5dp (accurate to individual house) coordinates
+    address = flask.request.args.get("address")
+    geolocator = Nominatim(user_agent="gympal")
+    location = geolocator.geocode(address)
+    try:
+        coords = str(round(location.latitude, 5)) + " " + str(round(location.longitude, 5))
+        print(coords)
+    except:
+        return {
+            "error": True,
+            "errortype": "invalidaddress"
+        }
 
     #Check if username is registered already
     result = cursor.execute("""
@@ -89,7 +102,8 @@ def register():
     #If username exists in database, pause registration 
     if result:
         return {
-            "usernametaken": True
+            "error": True,
+            "errortype": "usernametaken"
         }
     #Otherwise enter user's details into database
     else:
@@ -103,7 +117,7 @@ def register():
         #Save username between routes (for use in other sites)
         flask.session["username"] = username
         return {
-            "usernametaken": False
+            "error": False
         }
 
 @app.route("/username", methods=["GET"])

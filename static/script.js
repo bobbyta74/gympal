@@ -6,7 +6,7 @@
 let allcheckboxes = document.querySelectorAll("input[type='checkbox']");
 //Can't umbrella-select all inputs because dropdowns/radio buttons will be broken
 let alltextinputs = document.querySelectorAll("input[type='text']");
-let allnuminputs = document.querySelectorAll("input[type='text']");
+let allnuminputs = document.querySelectorAll("input[type='number']");
 addEventListener("load", function() {
     for (let i of allcheckboxes) {
         i.checked = false;
@@ -15,7 +15,7 @@ addEventListener("load", function() {
         i.value = "";
     }
     for (let i of allnuminputs) {
-        i.value = "";
+        i.value = 0;
     }
 })
 
@@ -91,26 +91,33 @@ if (submitregister) {
             
         }
 
-        //Validate coordinates (2 space-separated decimals, latitude between +-90 and longitude between +-180)
-        //Source https://stackoverflow.com/a/18690202 (except replaced ",\s" with single space " ")
-        let coordinateregex = /^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?) *[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$/gm;
+        //borysa 15, warsaw, poland
+        const numberafterstreet  = /^[^,]+ \d+, [^,]+, [^,]+$/;
+        //23 elm street, portland, usa
+        const streetafternumber = /^\d+ [^,]+, [^,]+, [^,]+$/;
+
+        
 
         //Expression validating all inputs
-        const formvalid = username.value.trim().length > 0 && pwd.value.trim().length > 0 && coordinateregex.test(coords.value.trim()) && style && Number(deadlift.value) > 0 && Number(squat.value) > 0 && Number(bench.value) > 0 && Number(overhead.value) > 0 && myschedule != "";
+        const formvalid = username.value.trim().length > 0 && pwd.value.trim().length > 0 && (numberafterstreet.test(address.value) || streetafternumber.test(address.value)) && style && Number(deadlift.value) > 0 && Number(squat.value) > 0 && Number(bench.value) > 0 && Number(overhead.value) > 0 && myschedule != "";
         
         if (formvalid) {
             msg.textContent = "";
-            let response = await window.fetch(`/register?username=${username.value.trim()}&pwd=${pwd.value}&coords=${coords.value.trim()}&membership=${membership.value}&style=${style}&deadlift=${deadlift.value}&squat=${squat.value}&bench=${bench.value}&&overhead=${overhead.value}&schedule=${myschedule}`);
+            let response = await window.fetch(`/register?username=${username.value.trim()}&pwd=${pwd.value}&address=${address.value.trim()}&membership=${membership.value}&style=${style}&deadlift=${deadlift.value}&squat=${squat.value}&bench=${bench.value}&&overhead=${overhead.value}&schedule=${myschedule}`);
             response = await response.json()
 
-            if (response.usernametaken) {
-                msg.textContent = "Username taken, try another"
+            if (response.error) {
+                if (response.errortype == "usernametaken") {
+                    msg.textContent = "Username taken, try again."
+                } else if (response.errortype == "invalidaddress") {
+                    msg.textContent = "Invalid address, try again."
+                }
             } else {
                 msg.textContent = "Registration successful"
                 window.location.href = "/static/homepage.html"
             }
         } else {
-            msg.textContent = "Registration details invalid";
+            msg.textContent = "Registration details invalid, try again.";
         }
     })
 }
