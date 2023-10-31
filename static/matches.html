@@ -35,12 +35,12 @@
         <h1>Matches</h1>
         <label for="sortingcriterion">Sort by</label>
         <select name="sortingcriterion" id="sortingcriterion">
-            <option value="blank">[Choose criterion]</option>
-            <option value="strength">Closest strength level</option>
-            <option value="location">Closest geographically</option>
-            <option value="schedule">Closest schedule</option>
+            <option value="[Select criterion]" selected disabled>[Select criterion]</option>
+            <option value="Difference in big lift total (kg)">Closest strength level</option>
+            <option value="Distance from you (km)">Closest geographically</option>
+            <option value="Schedule coverage (%)">Closest schedule</option>
         </select>
-        <div id="matchbox"></div>
+        <table id="matchestable"></table>
     </div>
 </body>
 </html>  

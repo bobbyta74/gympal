@@ -133,17 +133,41 @@ if (welcomemsg) {
 
 
 //matches.html
-let sortingcriterion = document.querySelector("#sortingcriterion")
+let sortingcriterion = document.querySelector("#sortingcriterion");
 if (sortingcriterion) {
-    sortingcriterion.addEventListener("input", async function() {
+    async function displaymatches() {
         response = await window.fetch(`/matches?crit=${sortingcriterion.value}`);
         response = await response.json();
         //Turn list into legible format
-        let matchesformatted = "";
-        for (let item of response.matches) {
-            matchesformatted += String(item) + "<br>";
+        let tablehtml = `<tr>
+                            <th>Username</th>
+                            <th>Coordinates</th>
+                            <th>Membership</th>
+                            <th>Style</th>
+                            <th>Deadlift</th>
+                            <th>Squat</th>
+                            <th>Benchpress</th>
+                            <th>Overhead press</th>
+                            <th>Schedule</th>`
+        if (sortingcriterion.value != "[Select criterion]") {
+            tablehtml += `<th>${sortingcriterion.value}</th></tr>`
+        } else {
+            tablehtml += `</tr>`
         }
-        matchbox.innerHTML = matchesformatted;
+        matchestable.innerHTML = tablehtml;
+        
+        for (let record of response.matches) {
+            const newRow = matchestable.insertRow();
+
+            for (let value of record) {
+                const cell = newRow.insertCell();
+                cell.textContent = value;
+            }
+        }
+    }
+    displaymatches();
+    sortingcriterion.addEventListener("input", async function() {
+        displaymatches()
     })
 }
 

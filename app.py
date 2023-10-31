@@ -145,7 +145,15 @@ def matches():
     possible_gymbros = "none"
 
     #Splice condition into query based on chosen factor
-    if sorting_factor == "strength":
+    if sorting_factor == "[Select criterion]":
+        possible_gymbros = cursor.execute("""
+        SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule
+        FROM users
+        WHERE membership = ? AND style = ? AND username <> ?
+        ORDER BY username
+        """, [ result["membership"], result["style"], result["username"] ]).fetchall()
+    #strength
+    elif sorting_factor == "Difference in big lift total (kg)":
         #Find difference between big lift total of user and others, sort ascending (from most to least similar)
         possible_gymbros = cursor.execute("""
             SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule, Abs(deadlift+squat+bench+overhead - ?) AS strengthdiff 
@@ -153,14 +161,16 @@ def matches():
             WHERE membership = ? AND style = ? AND username <> ?
             ORDER BY strengthdiff
         """, [ (result["deadlift"]+result["squat"]+result["bench"]+result["overhead"]), result["membership"], result["style"], username ]).fetchall()
-    elif sorting_factor == "location":
+    #location
+    elif sorting_factor == "Distance from you (km)":
         #INSERT HAVERSINE FORMULA HERE
         possible_gymbros = cursor.execute("""
         SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule 
         FROM users
         WHERE membership = ? AND style = ? AND username <> ?
         """, [ result["membership"], result["style"], result["username"] ]).fetchall()
-    elif sorting_factor == "schedule":
+    #schedule
+    elif sorting_factor == "Schedule coverage (%)":
         #Have to manipulate strings to compare here, can't be done in SQL only :(((
         def schedulecoverage(myschedule, otherschedule):
             #Turn both comma-separated strings into lists
@@ -191,8 +201,7 @@ def matches():
         possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=True)
     
     return {
-        "matches": possible_gymbros,
-        "criterion": sorting_factor
+        "matches": possible_gymbros
     }
 
 import json

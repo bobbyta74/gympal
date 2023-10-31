@@ -56,6 +56,19 @@ header>div>img {
 
 button {
     width:60px;
+    background-color:#102b61;
+    color:#ddd;
+    border-radius:5px;
+    border:2px solid black;
+}
+
+button:hover {
+    cursor:pointer;
+    filter:brightness(0.9);
+}
+
+button:active {
+    transform:scale(1.02);
 }
 
 a {
@@ -70,5 +83,5 @@ table {
 th, td {
     text-align:center;
     border:1px solid black;
-    padding:3px;
+    padding:7px;
 }
