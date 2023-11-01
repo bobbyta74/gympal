@@ -136,6 +136,7 @@ def logout():
     del flask.session["username"]
     return flask.redirect("/static/login.html")
 
+import geopy.distance
 @app.route("/matches", methods=["GET"])
 def matches():
     #Find gymbros that satisfy criteria
@@ -177,12 +178,24 @@ def matches():
         """, [ (result["deadlift"]+result["squat"]+result["bench"]+result["overhead"]), result["membership"], result["style"], username ]).fetchall()
     #location
     elif sorting_factor == "Distance from you (km)":
-        #INSERT HAVERSINE FORMULA HERE
-        possible_gymbros = cursor.execute("""
+        queried_gymbros = cursor.execute("""
         SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule 
         FROM users
         WHERE membership = ? AND style = ? AND username <> ?
         """, [ result["membership"], result["style"], result["username"] ]).fetchall()
+        possible_gymbros = []
+        for gymbro in queried_gymbros:
+            #Get the coordinates of user and gymbro
+            usercoords = result["coords"]
+            gymbrocoords = gymbro[1]
+            usercoords = usercoords.split()[0], usercoords.split()[1]
+            gymbrocoords = gymbrocoords.split()[0], gymbrocoords.split()[1]
+            #Add distance field to query results
+            gymbro_as_list = list(gymbro)
+            gymbro_as_list.append(geopy.distance.geodesic(usercoords, gymbrocoords).km)
+            possible_gymbros.append(gymbro_as_list)
+            #Sort the query result by distance
+            possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=False)
     #schedule
     elif sorting_factor == "Schedule coverage (%)":
         #Have to manipulate strings to compare here, can't be done in SQL only :(((
@@ -209,7 +222,6 @@ def matches():
             #Add schedule coverage to each gymbro's record tuple (in the query result, not in the actual table)
             gymbro_as_list = list(gymbro)
             gymbro_as_list.append(schedulecoverage(result["schedule"], gymbro[8]))
-            print(gymbro[0], gymbro_as_list[-1])
             possible_gymbros.append(gymbro_as_list)
         #Sort the query result by gymbros' schedule coverages
         possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=True)
