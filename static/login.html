@@ -6,6 +6,13 @@
     <title>GymPal: login</title>
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        #loginform {
+            display:flex;
+            flex-direction: column;
+            gap:5px;
+        }
+    </style>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,9 +29,9 @@
         <h1>Log in</h1>
         <form id="loginform">
             <label for="username">Username</label>
-            <input type="text" id="username" name="username">
+            <input type="text" id="username" name="username" class="smalltext">
             <label for="pwd">Password</label>
-            <input type="text" id="pwd">
+            <input type="text" id="pwd" class="smalltext">
             <button type="submit" id="submitlogin">Log in</button>
             <a href="register.html">Register</a>
         </form>

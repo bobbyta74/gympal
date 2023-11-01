@@ -7,6 +7,66 @@
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="dropdown.css">
+    <style>
+
+        #cardcontainer {
+            display:flex;
+            gap:20px;
+            justify-content:center;
+            padding:0 20% 0 20%;
+        }
+
+        @media only screen and (max-width: 900px) {
+            #cardcontainer {
+                flex-direction: column;
+            }
+
+            .card {
+                width:400px;
+            }
+
+            .card>a:first-child {
+                font-size:1.5rem;
+                font-weight:500;
+            }
+        }
+
+        @media only screen and (min-width: 901px) {
+            #cardcontainer {
+                flex-direction: row;
+            }
+
+            .card>a:first-child {
+                font-size:2vw;
+                font-weight:500;
+            }
+        }
+
+        .card {
+            background-color: #ddd;
+            padding:15px;
+            flex:1;
+            border-radius:10px;
+            display:block;
+            text-align:center;
+            height:auto;
+            border:2px solid rgb(173, 173, 173);
+            color:black;
+        }
+
+        .card>img {
+            width:80%;
+        }
+
+        .card>a:last-child {
+            font-size:0.4rem;
+            align-self:center;
+            color:black;
+            font-weight:400;
+        }
+
+
+    </style>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -37,22 +97,33 @@
         </div>
     </header>
     <div class="content">
-        <h1>Home</h1>
-        <h2 id="welcomemsg"></h2>
+        <h1 style="align-self:center;">Home</h1>
+        <h2 style="align-self:center;" id="welcomemsg"></h2>
 
-        <div>
-            <a href="matches.html">Matches</a>
-            <p>Browse potential gymbros</p>
-        </div>
+        <div id="cardcontainer">
+            <button id="matchescard" class="card">
+                <a href="matches.html">Matches</a>
+                <br>
+                <img src="/static/resources/handshake.png" alt="Handshake icon">
+                <p>Browse potential gymbros, brother!</p>
+                <a href="https://www.flaticon.com/free-icons/partnership-handshake" title="Partnership handshake icons">Partnership handshake icons created by zero_wing - Flaticon</a>
+            </button>
 
-        <div>
-            <a href="leaderboards.html">Leaderboards</a>
-            <p>Compare yourself to bros and the world</p>
-        </div>
+            <button id="leaderboardscard" class="card">
+                <a href="leaderboards.html">Leaderboards</a>
+                <br>
+                <img src="/static/resources/podium.png" alt="Handshake icon">
+                <p>Compare yourself to bros and the world</p>
+                <a href="https://www.flaticon.com/free-icons/podium" title="podium icons">Podium icons created by Freepik - Flaticon</a>
+            </button>
 
-        <div>
-            <a href="workout.html">Workout</a>
-            <p>Enter the deets from your current workout, bro</p>
+            <button id="workoutcard" class="card">
+                <a href="workout.html">Workout</a>
+                <br>
+                <img src="/static/resources/workout.png" alt="workout icon">
+                <p>Enter the deets from your current workout, bro</p>
+                <a href="https://www.flaticon.com/free-icons/workout" title="workout icons">Workout icons created by ultimatearm - Flaticon</a>
+            </button>
         </div>
     </div>
 </body>

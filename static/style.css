@@ -28,7 +28,13 @@ header>div {
     text-align:center;
     display:flex;
     justify-content:center;
+    align-items:center;
     gap:10px;
+}
+
+#logo:hover {
+    filter:brightness(0.8);
+    cursor:pointer;
 }
 
 header>div>img {
@@ -51,15 +57,26 @@ header>div>img {
 }
 
 .content {
+    display:flex;
+    flex-direction: column;
     margin-top:4.5rem;
+}
+
+input.smalltext {
+    width:200px;
+}
+
+.content>select {
+    width:fit-content;
 }
 
 button {
     width:60px;
-    background-color:#102b61;
-    color:#ddd;
+    background-color:#1565e7;
+    color:white;
     border-radius:5px;
     border:2px solid black;
+    font-weight:500;
 }
 
 button:hover {
@@ -78,6 +95,7 @@ a {
 
 table {
     border-collapse:collapse;
+    margin-top:10px;
 }
 
 th, td {

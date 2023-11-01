@@ -30,7 +30,7 @@ async function displayUsername() {
         dropdownbtn.textContent = response.username + " ⏷";
     } else {
         //If server doesn't return a username, the user has logged out
-        window.location.href="/static/login.html";
+        window.location.href = "/static/login.html";
     }
 }
 if (dropdownbtn) {
@@ -39,6 +39,9 @@ if (dropdownbtn) {
         //Delete current username
         let response = await window.fetch("/logout");
         window.location.href="/static/login.html";
+    })
+    logo.addEventListener("click", function() {
+        window.location.href = "/static/homepage.html"
     })
 }
 
@@ -135,6 +138,11 @@ async function displayWelcomeMsg() {
 }
 if (welcomemsg) {
     displayWelcomeMsg();
+    for (let i of [matchescard, leaderboardscard, workoutcard]) {
+        i.addEventListener("click", function() {
+            window.location.href = `${i.getAttribute("id").slice(0, -4)}.html`
+        })
+    }
 }
 
 
@@ -196,16 +204,17 @@ if (workoutform) {
             //Add/subtract checked box counter and toggle visibility
             if (mycheckbox.checked) {
                 howmanychecked += 1;
-                correspondingdiv.style.visibility = "visible";
+                correspondingdiv.style.display = "flex";
+                correspondingdiv.style.justifyContent = "space-between";
             } else {
                 howmanychecked -= 1;
-                correspondingdiv.style.visibility = "hidden";
+                correspondingdiv.style.display = "none";
             }
             //Only show text inputs if at least 1 checkbox is selected
             if (howmanychecked > 0) {
-                textinputs.style.visibility = "visible";
+                textinputs.style.display = "flex";
             } else {
-                textinputs.style.visibility = "hidden";
+                textinputs.style.visibility = "none";
             }
         })
     }

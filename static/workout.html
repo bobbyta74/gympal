@@ -8,17 +8,18 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="dropdown.css">
     <style>
-        fieldset, #textinputs>div {
+        fieldset {
             display:flex;
             flex-direction:column;
         }
 
-        input[type="text"], input[type="number"] {
-            width:200px;
+        #textinputs, #textinputs>div {
+            display:none;
         }
 
-        #textinputs, #textinputs>div {
-            visibility: hidden;
+        #textinputs>div {
+            width:max(30%, 300px);
+            margin:5px 0 5px 0;
         }
 
         button#timer {
@@ -33,6 +34,7 @@
         #gohome2 {
             visibility:hidden;
         }
+
     </style>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,30 +98,30 @@
                 <legend>Enter a comma-separated list of all your sets in the form [reps x weight]</legend>
                 <div id="deadliftdiv">
                     <label for="deadlift">Deadlift</label>
-                    <input type="text" id="deadlift">
+                    <input type="text" id="deadlift" class="smalltext">
                 </div>
                 
                 <div id="squatdiv">
                     <label for="squat">Squat</label>
-                    <input type="text" id="squat">
+                    <input type="text" id="squat" class="smalltext">
                 </div>
 
                 <div id="benchdiv">
                     <label for="bench">Benchpress</label>
-                    <input type="text" id="bench">
+                    <input type="text" id="bench" class="smalltext">
                 </div>
 
                 <div id="overheaddiv">
                     <label for="overhead">Overhead</label>
-                    <input type="text" id="overhead">
+                    <input type="text" id="overhead" class="smalltext">
                 </div>
 
                 <div id="otherliftdiv">
                     <label for="otherlift">Other</label>
-                    <input type="text" id="otherlift">
+                    <input type="text" id="otherlift" class="smalltext">
                 </div>
 
-                <button type="submit" id="submitworkout">Submit</button>
+                <button type="submit" id="submitworkout" style="margin-top:5px;">Submit</button>
             </fieldset>
         </form>
         <div id="msg"></div>
