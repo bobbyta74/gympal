@@ -192,7 +192,7 @@ def matches():
             gymbrocoords = gymbrocoords.split()[0], gymbrocoords.split()[1]
             #Add distance field to query results
             gymbro_as_list = list(gymbro)
-            gymbro_as_list.append(geopy.distance.geodesic(usercoords, gymbrocoords).km)
+            gymbro_as_list.append(round(geopy.distance.geodesic(usercoords, gymbrocoords).km, 3))
             possible_gymbros.append(gymbro_as_list)
             #Sort the query result by distance
             possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=False)

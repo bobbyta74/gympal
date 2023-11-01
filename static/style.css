@@ -2,6 +2,25 @@ body {
     font-family:"Lato", sans-serif;
     display:flex;
     flex-direction: column;
+    --text-color:#e8e6e3;
+    --bg-color:#181a1b;
+    --table-border-color:#474d50;
+    --link-color:#3369ff;
+    --card-bg:#232627;
+    --dropdown-bg:#2b2a33;
+}
+
+body.light-mode {
+    --text-color:black;
+    --bg-color:white;
+    --table-border-color:black;
+    --card-bg:#ddd;
+    --dropdown-bg:rgba(255, 255, 255, 0.979);
+}
+
+body {
+    color:var(--text-color);
+    background-color: var(--bg-color);
 }
 
 header {
@@ -30,6 +49,8 @@ header>div {
     justify-content:center;
     align-items:center;
     gap:10px;
+    height:80px;
+    align-items:center;
 }
 
 #logo:hover {
@@ -49,7 +70,22 @@ header>div>img {
 #everythingelseintheheader {
     display:flex;
     justify-content:right;
-    gap:10px;
+    gap:15px;
+    align-items:center;
+}
+
+#togglelightmode {
+    width:25px;
+    height:25px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border:0;
+    background:none;
+}
+
+#togglelightmode:active {
+    transform:scale(1.1);
 }
 
 #everythingelseintheheader > a {
@@ -91,6 +127,7 @@ button:active {
 a {
     text-decoration:none;
     font-weight:800;
+    color:var(--link-color)
 }
 
 table {
@@ -100,15 +137,26 @@ table {
 
 th, td {
     text-align:center;
-    border:1px solid black;
+    border:1px solid var(--table-border-color);
     padding:7px;
 }
 
-input {
+input, select {
     border-radius:5px;
-    border:1px solid black;
+    border:1px solid var(--table-border-color);
+    background-color: var(--card-bg);
+    color:inherit;
+}
+
+select:hover {
+    filter:brightness(0.8);
 }
 
 input[type="number"] {
     max-width:70px;
+}
+
+fieldset {
+    border:2px solid var(--table-border-color);
+    border-radius:5px;
 }

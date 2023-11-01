@@ -7,8 +7,8 @@
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="dropdown.css">
+    <link rel="icon" type="image/x-icon" href="/static/resources/favicon.ico">
     <style>
-
         #cardcontainer {
             display:flex;
             gap:20px;
@@ -43,15 +43,15 @@
         }
 
         .card {
-            background-color: #ddd;
+            background-color: var(--card-bg);
             padding:15px;
             flex:1;
             border-radius:10px;
             display:block;
             text-align:center;
             height:auto;
-            border:2px solid rgb(173, 173, 173);
-            color:black;
+            border:2px solid var(--table-border-color);
+            color:var(--text-color);
         }
 
         .card>img {
@@ -61,8 +61,8 @@
         .card>a:last-child {
             font-size:0.4rem;
             align-self:center;
-            color:black;
             font-weight:400;
+            color:var(--text-color);
         }
 
 
@@ -85,6 +85,7 @@
             <h1>GymPal</h1>
         </div>
         <div id="everythingelseintheheader">
+            <button id="togglelightmode"><img width="25px" src="/static/resources/dark-mode.png" alt="Toggle light/dark mode"></button>
             <a href="homepage.html" id="gohome">Home</a>
             <div id="dropdown">
                 <button id="dropdownbtn">⏷</button>

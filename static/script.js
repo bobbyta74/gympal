@@ -18,6 +18,19 @@ addEventListener("load", function() {
         i.value = 0;
     }
 })
+//Every page defaults to dark mode on load
+if (localStorage.getItem("displaymode") == "light") {
+    document.body.classList.add("light-mode");
+}
+//Enable light/dark mode toggling
+togglelightmode.addEventListener("click", function() {
+    document.body.classList.toggle("light-mode");
+    if (localStorage.getItem("displaymode") == "dark") {
+        localStorage.setItem("displaymode", "light")
+    } else {
+        localStorage.setItem("displaymode", "dark")
+    }
+})
 
 //all pages once logged in
 let dropdownbtn = document.querySelector("#dropdownbtn");
@@ -41,7 +54,7 @@ if (dropdownbtn) {
         window.location.href="/static/login.html";
     })
     logo.addEventListener("click", function() {
-        window.location.href = "/static/homepage.html"
+        window.location.href = "/static/homepage.html";
     })
 }
 
