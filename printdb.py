@@ -4,9 +4,7 @@ connection = sqlite3.connect("gymbros.db")
 cursor = connection.cursor()
 
 result = cursor.execute(f"""
-        SELECT username, 
-        FROM users
-        ORDER BY monthstimespent DESC
-    """).fetchone()
+        SELECT * FROM friends
+    """).fetchall()
 
 print(result)

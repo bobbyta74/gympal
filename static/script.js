@@ -178,10 +178,9 @@ if (sortingcriterion) {
                             <th>Overhead press</th>
                             <th>Schedule</th>`
         if (sortingcriterion.value != "[Select criterion]") {
-            tablehtml += `<th>${sortingcriterion.value}</th></tr>`
-        } else {
-            tablehtml += `</tr>`
+            tablehtml += `<th>${sortingcriterion.value}</th>`
         }
+        tablehtml += "<th>Request</th></tr>"
         matchestable.innerHTML = tablehtml;
         
         for (let record of response.matches) {
@@ -191,8 +190,26 @@ if (sortingcriterion) {
                 const cell = newRow.insertCell();
                 cell.textContent = value;
             }
+            
+            //FRIEND REQUESTS
+            const button = document.createElement("button");
+            button.textContent = "Add friend";
+            const friendreq_outcome = document.createElement("div");
+            const buttoncell = document.createElement("td");
+            buttoncell.appendChild(button);
+            buttoncell.appendChild(friendreq_outcome);
+            newRow.appendChild(buttoncell);
+            button.addEventListener("click", async function() {
+                //Get gymbro's username
+                let hopefullygymbro = button.parentNode.parentNode.querySelector("td").textContent;
+                console.log(hopefullygymbro, "requested")
+                let response = await window.fetch(`/friendrequest?requested=${hopefullygymbro}`);
+                response = await response.json();
+                friendreq_outcome.textContent = response.outcome;
+            })
         }
     }
+
     displaymatches();
     sortingcriterion.addEventListener("input", async function() {
         displaymatches()

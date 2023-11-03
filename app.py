@@ -21,6 +21,17 @@ def initialise_db():
             monthstimespent INTEGER
         )
     """)
+    #Make table linking users as friends
+    #User1 is the friendor, user2 is the friendee
+    #status set as 0/false when friend request made, changed to 1/true when accepted by other user
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friends(
+            user1 TEXT,
+            user2 TEXT,
+            status BOOL,
+            PRIMARY KEY (user1, user2)
+        );
+    """)
 
     connection.commit()
     connection.close()
@@ -229,6 +240,45 @@ def matches():
     return {
         "matches": possible_gymbros
     }
+
+@app.route("/friendrequest", methods=["GET"])
+def friendrequest():
+    connection = sqlite3.connect("gymbros.db")
+    cursor = connection.cursor()
+
+    currentuser = flask.session["username"]
+    hopefullygymbro = flask.request.args.get("requested")
+
+    #Avoid redundant friend requests
+    def bothinrecord(twodlist, a, b):
+        for sublist in twodlist:
+            if a in sublist and b in sublist:
+                if sublist[2] == 1:
+                    #Friendship accepted
+                    return [True, True]
+                elif sublist[2] == 0:
+                    #Friendship requested
+                    return [True, False]
+        #No friendship
+        return [False, False]
+
+    result = cursor.execute("SELECT * FROM friends").fetchall()
+    if bothinrecord(result, currentuser, hopefullygymbro)[0]: 
+        if bothinrecord(result, currentuser, hopefullygymbro)[1] == True:
+            return {
+                "outcome": "You're already gymbros with this dude, goober :|"
+            }
+        else:
+            return {
+                "outcome": "You requested this gymbro already, silly :|"
+            }
+    else:
+        cursor.execute("INSERT INTO friends(user1, user2, status) VALUES (?, ?, 0)", [currentuser, hopefullygymbro])
+        connection.commit()
+        connection.close()
+        return {
+            "outcome": "Gymbro requested! Radical, my dude!"
+        }
 
 import json
 @app.route("/workout", methods=["GET"])

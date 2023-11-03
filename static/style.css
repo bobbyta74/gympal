@@ -74,7 +74,7 @@ header>div>img {
     align-items:center;
 }
 
-#togglelightmode {
+#togglelightmode, #notifs {
     width:25px;
     height:25px;
     display:flex;
@@ -84,8 +84,8 @@ header>div>img {
     background:none;
 }
 
-#togglelightmode:active {
-    transform:scale(1.1);
+#togglelightmode:active, #notifs:active {
+    transform:scale(1.2);
 }
 
 #everythingelseintheheader > a {
