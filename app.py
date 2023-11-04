@@ -396,6 +396,34 @@ def leaderboards():
             ORDER BY {criterion}
         """).fetchall()
 
-    return {
-        "data": result
-    }
+    #Limit to friends only if friends-only leaderboard chosen
+    scale = flask.request.args.get("scale")
+    currentuser = flask.session["username"]
+    if scale == "friendsonly":
+        friendsleaderboard = []
+        #Get all friendships - both those initiated by the user and by someone else 
+        userandfriends = cursor.execute("""
+            SELECT user1
+            FROM friends
+            WHERE user2 = ? AND status = 1
+        """, [currentuser]).fetchall() + cursor.execute("""
+            SELECT user2
+            FROM friends
+            WHERE user1 = ? AND status = 1
+        """, [currentuser]).fetchall()
+        userandfriends = list(record[0] for record in userandfriends)
+        userandfriends.append(currentuser)
+        #For every person in the leaderboard, check if they're in the user's friends list (queried above)
+        #If they are then add them to a new leaderboard list
+        #Because stupid bloody python is incapable of deleting items from the original list that don't match the requirements
+        for record in result:
+            if record[0] in userandfriends:
+                friendsleaderboard.append(record)
+        return {
+            "data": friendsleaderboard
+        }
+    #Otherwise just show the whole leaderboard
+    else:
+        return {
+            "data": result
+        }

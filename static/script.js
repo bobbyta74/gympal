@@ -36,7 +36,7 @@ togglelightmode.addEventListener("click", function() {
 let dropdownbtn = document.querySelector("#dropdownbtn");
 //Show username in dropdown menu in navbar
 //Needs to be async, so made a function for it
-async function displayUsername() {
+async function displayusernameindropdown() {
     let response = await window.fetch("/username");
     response = await response.json();
     if (response.username != false) {
@@ -46,8 +46,20 @@ async function displayUsername() {
         window.location.href = "/static/login.html";
     }
 }
+let notifsicon = document.querySelector("#gonotifs>img")
+async function shownewnotifs() {
+    let response = await window.fetch("/getfriendreqs");
+    response = await response.json();
+
+    if (response.data.length > 0) {
+        notifsicon.src = "/static/resources/bellactive.png";
+    } else {
+        notifsicon.src = "/static/resources/bell.png";
+    }
+}
 if (dropdownbtn) {
-    displayUsername();
+    displayusernameindropdown();
+    shownewnotifs();
     logout.addEventListener("click", async function() {
         //Delete current username
         let response = await window.fetch("/logout");
@@ -366,12 +378,18 @@ if (workoutform) {
     })
 }
 
+
+
+//leaderboards.html
 let sortleaderboardby = document.querySelector("#sortleaderboardby");
 if (sortleaderboardby) {
-    async function displayleaderboard() {
+    async function addleaderboardcells() {
+        //Choose either global or friends-only leaderboard
+        let leaderboardscale = document.querySelector("input[name='scale']:checked").getAttribute("id").slice(5);
         //Fetch table ordered by chosen criterion and add row of cells for every record
-        let response = await window.fetch(`/leaderboards?criterion=${sortleaderboardby.value}`);
+        let response = await window.fetch(`/leaderboards?criterion=${sortleaderboardby.value}&scale=${leaderboardscale}`);
         response = await response.json();
+        console.log(response.data)
         for (let record of response.data) {
             const newRow = leaderboardtable.insertRow();
 
@@ -381,8 +399,7 @@ if (sortleaderboardby) {
             }
         }
     }
-    displayleaderboard();
-    sortleaderboardby.addEventListener("input", function() {
+    function updateleaderboard() {
         //Clear current table to avoid duplicates, then sort leaderboard by new criterion
         leaderboardtable.innerHTML = `<tr>
                                         <th>Username</th>
@@ -396,14 +413,16 @@ if (sortleaderboardby) {
                                         <th>Volume lifted this month</th>
                                         <th>Time spent at the gym this month</th>
                                     </tr>`
-        displayleaderboard();
+        addleaderboardcells();
 
         //Highlight the sorting criterion
         //But don't highlight if sorting by username
         const sortingcriteria = ["", "deadlift", "squat", "bench", "overhead", "lowerbody", "upperbody", "bigtotal", "monthsvolume", "monthstimespent"];
-        let column2behighlighted = sortingcriteria.indexOf(sortleaderboardby.value);
-        let tableheadings = leaderboardtable.querySelector("tr").querySelectorAll("th");
-        tableheadings[column2behighlighted].style.backgroundColor = "blue";
+        if (sortleaderboardby.value != "username") {
+            let column2behighlighted = sortingcriteria.indexOf(sortleaderboardby.value);
+            let tableheadings = leaderboardtable.querySelector("tr").querySelectorAll("th");
+            tableheadings[column2behighlighted].style.backgroundColor = "blue";
+        }
 
         //Colour rows (DOESN'T RUN???? VOLVO PLS FIX)
         let datarows = leaderboardtable.querySelectorAll("tr:not(:first-child)");
@@ -413,5 +432,11 @@ if (sortleaderboardby) {
             console.log(cells[5].textContent);
             cells[5].style.backgroundColor = "blue";
         }
-    })
+    }
+    //Update leaderboard display
+    addleaderboardcells();
+    radioglobal.addEventListener("click", updateleaderboard);
+    radiofriendsonly.addEventListener("click", updateleaderboard);
+    //Change leaderboard sort factor
+    sortleaderboardby.addEventListener("input", updateleaderboard)
 }
