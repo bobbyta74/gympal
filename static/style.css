@@ -74,7 +74,7 @@ header>div>img {
     align-items:center;
 }
 
-#togglelightmode, #notifs {
+#togglelightmode, #gonotifs {
     width:25px;
     height:25px;
     display:flex;
@@ -84,7 +84,7 @@ header>div>img {
     background:none;
 }
 
-#togglelightmode:active, #notifs:active {
+#togglelightmode:active, #gonotifs:active {
     transform:scale(1.2);
 }
 

@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymPal: leaderboards</title>
+    <title>GymPal: notifications</title>
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        #notifscontainer {
+            display:flex;
+            flex-direction:column;
+        }
+    </style>
     <link rel="stylesheet" href="dropdown.css">
+    <link rel="icon" type="image/x-icon" href="/static/resources/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/static/resources/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/resources/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/resources/favicon-16x16.png">
@@ -38,36 +45,10 @@
         </div>
     </header>
     <div class="content">
-        <h1>Leaderboards</h1>
-        <div>
-            <label for="sortleaderboardby">Sort by:</label>
-            <select name="sortleaderboardby" id="sortleaderboardby">
-                <option value="username" selected disabled>[Select criterion]</option>
-                <option value="deadlift">Deadlift record</option>
-                <option value="squat">Squat record</option>
-                <option value="bench">Benchpress record</option>
-                <option value="overhead">Overhead press record</option>
-                <option value="upperbody">Total upper body record</option>
-                <option value="lowerbody">Total lower body record</option>
-                <option value="bigtotal">Total big lift record</option>
-                <option value="monthsvolume">Volume lifted this month</option>
-                <option value="monthstimespent">Time spent at the gym this month</option>
-            </select>
+        <h1>Notifications</h1>
+        <div id="notifscontainer">
+
         </div>
-        <table id="leaderboardtable">
-            <tr>
-                <th>Username</th>
-                <th>Deadlift</th>
-                <th>Squat</th>
-                <th>Benchpress</th>
-                <th>Overhead press</th>
-                <th>Lower body total</th>
-                <th>Upper body total</th>
-                <th>Big lift total</th>
-                <th>Volume lifted this month</th>
-                <th>Time spent at the gym this month</th>
-            </tr>
-        </table>
     </div>
 </body>
 </html>

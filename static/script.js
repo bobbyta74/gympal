@@ -56,6 +56,9 @@ if (dropdownbtn) {
     logo.addEventListener("click", function() {
         window.location.href = "/static/homepage.html";
     })
+    gonotifs.addEventListener("click", function() {
+        window.location.href = "/static/notifications.html";
+    })
 }
 
 
@@ -160,6 +163,41 @@ if (welcomemsg) {
 
 
 
+//notifications.html
+let notifscontainer = document.querySelector("#notifscontainer")
+async function displayrequests() {
+    let request = await window.fetch("/getfriendreqs");
+    request = await request.json();
+    for (let wannabegymbro of request.data) {
+        const notif = document.createElement("div.notif");
+        notif.textContent = `You received a gymbro request from ${wannabegymbro}, bro!`;
+        const accept = document.createElement("button");
+        accept.classList.add("accept");
+        accept.textContent = "Accept";
+        const reject = document.createElement("button");
+        reject.textContent = "Reject";
+        reject.classList.add("reject");
+        notif.appendChild(accept);
+        notif.appendChild(reject);
+        notifscontainer.appendChild(notif);
+
+        accept.addEventListener("click", function() {
+            window.fetch(`/processfriendreq?from=${wannabegymbro}&type=accept`);
+            notif.innerHTML = "Request accepted";
+        });
+
+        reject.addEventListener("click", function() {
+            window.fetch(`/processfriendreq?from=${wannabegymbro}&type=reject`);
+            notif.innerHTML = "Request rejected";
+        });
+    }
+}
+if (notifscontainer) {
+    displayrequests();
+}
+
+
+
 //matches.html
 let sortingcriterion = document.querySelector("#sortingcriterion");
 if (sortingcriterion) {
@@ -203,7 +241,7 @@ if (sortingcriterion) {
                 //Get gymbro's username
                 let hopefullygymbro = button.parentNode.parentNode.querySelector("td").textContent;
                 console.log(hopefullygymbro, "requested")
-                let response = await window.fetch(`/friendrequest?requested=${hopefullygymbro}`);
+                let response = await window.fetch(`/requestfriend?requested=${hopefullygymbro}`);
                 response = await response.json();
                 friendreq_outcome.textContent = response.outcome;
             })

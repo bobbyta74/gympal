@@ -241,8 +241,9 @@ def matches():
         "matches": possible_gymbros
     }
 
-@app.route("/friendrequest", methods=["GET"])
-def friendrequest():
+@app.route("/requestfriend", methods=["GET"])
+def requestfriend():
+    #Let current user request gymbro
     connection = sqlite3.connect("gymbros.db")
     cursor = connection.cursor()
 
@@ -279,6 +280,52 @@ def friendrequest():
         return {
             "outcome": "Gymbro requested! Radical, my dude!"
         }
+
+@app.route("/getfriendreqs", methods=["GET"])
+def getfriendreqs():
+    #Check if user has received any friend requests
+    connection = sqlite3.connect("gymbros.db")
+    cursor = connection.cursor()
+
+    currentuser = flask.session["username"]
+
+    #Get the requester from unconfirmed requests of the current user
+    friendrequests = cursor.execute("""
+        SELECT user1 FROM friends
+        WHERE user2 = ? AND status = 0
+    """, [currentuser]).fetchall()
+
+    return {
+        "data": friendrequests
+    }
+
+
+
+@app.route("/processfriendreq", methods=["GET"])
+def processfriendreq():
+    #Accept or reject friend request in db
+    connection = sqlite3.connect("gymbros.db")
+    cursor = connection.cursor()
+
+    currentuser = flask.session["username"]
+    requester = flask.request.args.get("from")
+    actiontype = flask.request.args.get("type")
+    if actiontype == "accept":
+        cursor.execute("""
+            UPDATE friends
+            SET status = 1
+            WHERE user1 = ? AND user2 = ?
+        """, [requester, currentuser])
+    else:
+        cursor.execute("""
+            DELETE FROM friends
+            WHERE user1 = ? AND user2 = ?
+        """, [requester, currentuser])
+    connection.commit()
+    connection.close()
+    return '', 204
+
+
 
 import json
 @app.route("/workout", methods=["GET"])
