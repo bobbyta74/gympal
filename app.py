@@ -45,6 +45,7 @@ app.secret_key = 'x\xed9\xa4P\xf9\x1b\xea\xb5\x94\xc4\x90}\x7f\xd6\xb3'
 def front():
     return flask.redirect("/static/login.html")
 
+#login.html
 @app.route("/login", methods = ["GET"])
 def login():
     #Log in as existing user
@@ -71,7 +72,7 @@ def login():
             "type": "failure"
         }
 
-
+#register.html
 from geopy.geocoders import Nominatim
 @app.route("/register", methods = ["GET"])
 def register():
@@ -131,6 +132,7 @@ def register():
             "error": False
         }
 
+#Every page once logged in
 @app.route("/username", methods=["GET"])
 def username():
     if "username" in flask.session:
@@ -141,11 +143,32 @@ def username():
         return {
             "username": False
         }
-
 @app.route("/logout")
 def logout():
     del flask.session["username"]
     return flask.redirect("/static/login.html")
+
+#profile.html and settings.html
+from geopy.geocoders import Nominatim
+@app.route("/userdetails", methods=["GET"])
+def userdetails():
+    #Return details of current user
+    connection = sqlite3.connect("gymbros.db")
+    cursor = connection.cursor()
+    username = flask.session["username"]
+    geolocator = Nominatim(user_agent="gympal")
+
+    result = cursor.execute("""
+        SELECT * FROM users
+        WHERE username = ?
+    """, [username]).fetchone()
+    result = list(result)
+    result[2] = str(geolocator.reverse(result[2].split()))
+    #Hide password
+    result.remove(result[1])
+    return {
+        "userdetails": result
+    }
 
 import geopy.distance
 @app.route("/matches", methods=["GET"])
@@ -241,6 +264,7 @@ def matches():
         "matches": possible_gymbros
     }
 
+#FRIENDS
 @app.route("/requestfriend", methods=["GET"])
 def requestfriend():
     #Let current user request gymbro
@@ -250,18 +274,8 @@ def requestfriend():
     currentuser = flask.session["username"]
     hopefullygymbro = flask.request.args.get("requested")
 
-    #Avoid redundant friend requests
-    def bothinrecord(twodlist, a, b):
-        for sublist in twodlist:
-            if a in sublist and b in sublist:
-                if sublist[2] == 1:
-                    #Friendship accepted
-                    return [True, True]
-                elif sublist[2] == 0:
-                    #Friendship requested
-                    return [True, False]
-        #No friendship
-        return [False, False]
+    #Import the function from bothinrecord.py to avoid redundant friend requests (request/friend already exists)
+    from bothinrecord import bothinrecord
 
     result = cursor.execute("SELECT * FROM friends").fetchall()
     if bothinrecord(result, currentuser, hopefullygymbro)[0]: 
@@ -299,8 +313,6 @@ def getfriendreqs():
         "data": friendrequests
     }
 
-
-
 @app.route("/processfriendreq", methods=["GET"])
 def processfriendreq():
     #Accept or reject friend request in db
@@ -325,7 +337,29 @@ def processfriendreq():
     connection.close()
     return '', 204
 
+@app.route("/getfriends", methods=["GET"])
+def getfriends():
+    #Let current user request gymbro
+    connection = sqlite3.connect("gymbros.db")
+    cursor = connection.cursor()
 
+    currentuser = flask.session["username"]
+    #Import the function from bothinrecord.py to check if ppl are friends
+    from bothinrecord import bothinrecord
+
+    friendslist = []
+    userstable = cursor.execute("SELECT * FROM users").fetchall()
+    friendstable = cursor.execute("SELECT * FROM friends").fetchall()
+
+    #If request/friendship exists AND is friendship
+    for user in userstable:
+        if bothinrecord(friendstable, currentuser, user[0]) == [True, True] and user[0] != currentuser:
+            friendslist.append(user[0])
+    return {
+        "friends": friendslist
+    }
+
+            
 
 import json
 @app.route("/workout", methods=["GET"])
@@ -427,3 +461,8 @@ def leaderboards():
         return {
             "data": result
         }
+
+@app.route("/setschedule")
+def setschedule():
+    #Save new/override old scheduled day(s)
+    pass

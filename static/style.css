@@ -160,3 +160,23 @@ fieldset {
     border:2px solid var(--table-border-color);
     border-radius:5px;
 }
+
+.card {
+    background-color: var(--card-bg);
+    padding:15px;
+    flex:1;
+    border-radius:10px;
+    display:block;
+    text-align:center;
+    height:auto;
+    border:2px solid var(--table-border-color);
+    color:var(--text-color);
+}
+
+.card>img {
+    width:80%;
+}
+
+input[type="checkbox"] {
+    border:5px solid black;
+}

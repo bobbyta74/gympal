@@ -4,30 +4,24 @@ import sqlite3
 connection = sqlite3.connect("gymbros.db")
 cursor = connection.cursor()
 
-#Start database from scratch
-def initialise_db():
-    #Make table containing all users' data
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users(
-            username TEXT PRIMARY KEY,
-            password TEXT,
-            coords TEXT,
-            membership TEXT,
-            style TEXT,
-            deadlift INTEGER,
-            squat INTEGER,
-            bench INTEGER,
-            overhead INTEGER,
-            schedule TEXT,
-            monthsvolume INTEGER,
-            monthstimespent INTEGER
-        )
-    """)
-
-    connection.commit()
-
-initialise_db()
-
+#Make users table
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users(
+        username TEXT PRIMARY KEY,
+        password TEXT,
+        coords TEXT,
+        membership TEXT,
+        style TEXT,
+        deadlift INTEGER,
+        squat INTEGER,
+        bench INTEGER,
+        overhead INTEGER,
+        schedule TEXT,
+        monthsvolume INTEGER,
+        monthstimespent INTEGER
+    )
+""")
+connection.commit()
 #Insert existing/seed data (because there are so many criteria I'm not gonna do it manually every time lol)
 seeddata = [
 ("ronniepickering", "doyouknowwhoiam", "52.20387 20.96515", "artis", "bodybuilding", 125, 125, 125, 125, "Monday,Tuesday,Wednesday", 31250, 547),
@@ -47,5 +41,35 @@ for item in seeddata:
         """, item)
     except:
         pass
+
+#Make friends table
+#user1 = initiator, user2 = requested, status = 0 or 1 depending on whether friend accepted or not
+cursor.execute("""
+        CREATE TABLE IF NOT EXISTS friends(
+            user1 TEXT,
+            user2 TEXT,
+            status BOOL,
+            PRIMARY KEY (user1, user2)
+        );
+""")
+seeddata = [('mikolajszywala', 'mikelarteta', 1), ('mikelarteta', 'ronniepickering', 0), ('auba', 'mikolajszywala', 1)]
+for item in seeddata:
+    try:
+        cursor.execute("""
+            INSERT INTO users(user1, user2, status)
+            VALUES (?, ?, ?)
+        """, item)
+    except:
+        pass
+
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS weeklyschedule(
+        user TEXT,
+        day TEXT,
+        exercises TEXT,
+        partners TEXT
+        PRIMARY KEY (user, day)
+    )
+""")
 connection.commit()
 connection.close()

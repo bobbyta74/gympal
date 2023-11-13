@@ -166,14 +166,30 @@ async function displayWelcomeMsg() {
 }
 if (welcomemsg) {
     displayWelcomeMsg();
-    for (let i of [matchescard, leaderboardscard, workoutcard]) {
+    for (let i of document.querySelectorAll("#cardcontainer button")) {
         i.addEventListener("click", function() {
-            window.location.href = `${i.getAttribute("id").slice(0, -4)}.html`
+            window.location.href = `${i.getAttribute("id").slice(0, -4)}.html`;
         })
     }
 }
 
+//profile.html
+let usercard = document.querySelector("#usercard")
+async function displayusercard() {
+    let response = await window.fetch("/userdetails");
+    response = await response.json();
 
+    console.log(response.userdetails)
+    let keys = ["Username", "Address", "Gym membership", "Style", "Deadlift record", "Squat record", "Benchpress record", "Overhead press record", "Schedule", "Volume lifted this month", "Time at gym this month"]
+    for (let data of response.userdetails) {
+        const label = keys[response.userdetails.indexOf(data)];
+        labels.innerHTML += label + ":<br><br>";
+        deets.innerHTML += data + "<br><br>"
+    }
+}
+if (usercard) {
+    displayusercard();
+}
 
 //notifications.html
 let notifscontainer = document.querySelector("#notifscontainer")
@@ -438,5 +454,35 @@ if (sortleaderboardby) {
     radioglobal.addEventListener("click", updateleaderboard);
     radiofriendsonly.addEventListener("click", updateleaderboard);
     //Change leaderboard sort factor
-    sortleaderboardby.addEventListener("input", updateleaderboard)
+    sortleaderboardby.addEventListener("input", updateleaderboard);
+}
+
+//setschedule.html
+let scheduleinput = document.querySelector("#scheduleinput");
+async function displayfriends() {
+    let response = await window.fetch("/getfriends");
+    response = await response.json();
+    for (let friend of response.friends) {
+        let checkboxdiv = document.createElement("div");
+        let checkbox = document.createElement(`input`);
+        checkbox.setAttribute("id", friend);
+        checkbox.setAttribute("type", "checkbox");
+        let label = document.createElement("label");
+        label.setAttribute("for", friend);
+        label.textContent = friend;
+        checkboxdiv.appendChild(checkbox);
+        checkboxdiv.appendChild(label);
+        partnerset.appendChild(checkboxdiv);
+    }
+}
+async function addtoschedule() {
+    let days = []
+    //To-do: ollect ticked days and process
+    let response = await window.fetch("/setschedule?days=");
+    response = await response.json();
+
+}
+if (scheduleinput) {
+    displayfriends();
+    let submitbtn = document.querySelector("button");
 }

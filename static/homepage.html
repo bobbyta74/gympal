@@ -13,12 +13,13 @@
             display:flex;
             gap:20px;
             justify-content:center;
-            padding:0 20% 0 20%;
+            padding:0 15% 0 15%;
         }
 
         @media only screen and (max-width: 900px) {
             #cardcontainer {
                 flex-direction: column;
+                align-items:center;
             }
 
             .card {
@@ -26,7 +27,7 @@
             }
 
             .card>a:first-child {
-                font-size:1.5rem;
+                font-size:1.3rem;
                 font-weight:500;
             }
         }
@@ -37,25 +38,9 @@
             }
 
             .card>a:first-child {
-                font-size:2vw;
+                font-size:1.8vw;
                 font-weight:500;
             }
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            padding:15px;
-            flex:1;
-            border-radius:10px;
-            display:block;
-            text-align:center;
-            height:auto;
-            border:2px solid var(--table-border-color);
-            color:var(--text-color);
-        }
-
-        .card>img {
-            width:80%;
         }
 
         .card>a:last-child {
@@ -91,7 +76,7 @@
             <div id="dropdown">
                 <button id="dropdownbtn">⏷</button>
                 <div id="dropdown-content">
-                    <a href="goprofile" id="profile">Profile</a>
+                    <a href="profile.html" id="goprofile">Profile</a>
                     <a href="settings.html" id="gosettings">Settings</a>
                     <button id="logout">Log out</button>
                 </div>
@@ -125,6 +110,14 @@
                 <img src="/static/resources/workout.png" alt="workout icon">
                 <p>Enter the deets from your current workout, bro</p>
                 <a href="https://www.flaticon.com/free-icons/workout" title="workout icons">Workout icons created by ultimatearm - Flaticon</a>
+            </button>
+
+            <button id="setschedulecard" class="card">
+                <a href="setschedule.html">Schedule</a>
+                <br>
+                <img src="/static/resources/schedule.png" alt="workout icon">
+                <p>Schedule regular workouts for yourself (and your bros???)</p>
+                <a href="https://www.flaticon.com/free-icons/schedule" title="schedule icons">Schedule icons created by Freepik - Flaticon</a>
             </button>
         </div>
     </div>

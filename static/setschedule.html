@@ -3,17 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymPal: notifications</title>
+    <title>GymPal: leaderboards</title>
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
-    <style>
-        #notifscontainer {
-            display:flex;
-            flex-direction:column;
-        }
-    </style>
     <link rel="stylesheet" href="dropdown.css">
-    <link rel="icon" type="image/x-icon" href="/static/resources/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/static/resources/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/resources/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/resources/favicon-16x16.png">
@@ -45,10 +38,35 @@
         </div>
     </header>
     <div class="content">
-        <h1>Notifications</h1>
-        <div id="notifscontainer">
-
+        <h1>Schedule</h1>
+        <div id="scheduleinput">
+            <fieldset id="scheduleset">
+                <legend>Which day do you want to schedule?</legend>
+                <input type="checkbox" name="Monday" id="mon">
+                <label for="mon">Monday</label>
+                <input type="checkbox" name="Tuesday" id="tue">
+                <label for="tue">Tuesday</label>
+                <input type="checkbox" name="Wednesday" id="wed">
+                <label for="wed">Wednesday</label>
+                <input type="checkbox" name="Thursday" id="thu">
+                <label for="thu">Thursday</label>
+                <input type="checkbox" name="Friday" id="fri">
+                <label for="fri">Friday</label>
+                <input type="checkbox" name="Saturday" id="sat">
+                <label for="sat">Saturday</label>
+                <input type="checkbox" name="Sunday" id="sun">
+                <label for="sun">Sunday</label>
+            </fieldset>
+            <fieldset id="exerciseset">
+                <legend>Which exercises will you do? Enter a comma-separated list.</legend>
+                <input type="text" id="exerciselist">
+            </fieldset>
+            <fieldset id="partnerset">
+                <legend>Will you have a workout partner? (optional)</legend>
+            </fieldset>
+            <button style="width:fit-content;" type="submit">Add workout</button>
         </div>
     </div>
+    
 </body>
 </html>

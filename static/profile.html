@@ -3,17 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymPal: notifications</title>
+    <title>GymPal: matches</title>
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dropdown.css">
     <style>
-        #notifscontainer {
+        h1 {
+            align-self:center;
+        }
+        #usercard {
             display:flex;
-            flex-direction:column;
+            gap:5px;
+            width:fit-content;
+            align-self:center;
+        }
+        #usercard>div {
+            text-align:left;
         }
     </style>
-    <link rel="stylesheet" href="dropdown.css">
-    <link rel="icon" type="image/x-icon" href="/static/resources/favicon.ico">
+
     <link rel="apple-touch-icon" sizes="180x180" href="/static/resources/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/resources/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/resources/favicon-16x16.png">
@@ -45,9 +53,10 @@
         </div>
     </header>
     <div class="content">
-        <h1>Notifications</h1>
-        <div id="notifscontainer">
-
+        <h1>Profile</h1>
+        <div id="usercard" class="card">
+            <div id="labels"></div>
+            <div id="deets"></div>
         </div>
     </div>
 </body>
