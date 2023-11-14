@@ -97,7 +97,15 @@ if (submitlogin) {
 }
 
 
-
+function whichselected(sourcelist) {
+    let selected = "";
+    for (let i of sourcelist) {
+        if (i.checked) {
+            selected += i.name + ",";
+        }
+    }
+    return selected.slice(0, -1)
+}
 //register.html
 let submitregister = document.querySelector("#submitregister")
 if (submitregister) {
@@ -105,14 +113,7 @@ if (submitregister) {
         //Prevent reload
         event.preventDefault();
         //Make string of scheduled days by checking which input is selected
-        let myschedule = ""
-        for (let i of [mon, tue, wed, thu, fri, sat, sun]) {
-            if (i.checked) {
-                myschedule += i.name + ",";
-            }
-        }
-        //Remove end comma from string
-        myschedule = myschedule.slice(0, -1);
+        let myschedule = whichselected([mon, tue, wed, thu, fri, sat, sun]);
 
         //Check which style radio button (if any) is selected and set style to that
         let style;
@@ -466,6 +467,7 @@ async function displayfriends() {
         let checkboxdiv = document.createElement("div");
         let checkbox = document.createElement(`input`);
         checkbox.setAttribute("id", friend);
+        checkbox.setAttribute("name", friend);
         checkbox.setAttribute("type", "checkbox");
         let label = document.createElement("label");
         label.setAttribute("for", friend);
@@ -475,14 +477,15 @@ async function displayfriends() {
         partnerset.appendChild(checkboxdiv);
     }
 }
-async function addtoschedule() {
-    let days = []
-    //To-do: ollect ticked days and process
-    let response = await window.fetch("/setschedule?days=");
+async function addtoschedule(event) {
+    event.preventDefault();
+    let daysscheduled = whichselected(document.querySelectorAll("#scheduleset input"));
+    let partners = whichselected(document.querySelectorAll("#partnerset input"));
+    let response = await window.fetch(`/setschedule?days=${daysscheduled}&exercises=${exerciselist.value}&partners=${partners}&start=${starttime.value}&end=${endtime.value}`);
     response = await response.json();
-
+    console.log(response.data);
 }
 if (scheduleinput) {
     displayfriends();
-    let submitbtn = document.querySelector("button");
+    submitbtn.addEventListener("click", addtoschedule)
 }

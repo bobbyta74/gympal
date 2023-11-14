@@ -3,10 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymPal: leaderboards</title>
+    <title>GymPal: set schedule</title>
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="dropdown.css">
+
+    <style>
+        #timeset>div {
+            display:flex;
+            justify-content:space-between;
+            width:200px;
+        }
+
+        #timeset {
+            display:flex;
+            flex-direction: column;
+            gap:10px;
+        }
+
+    </style>
+
     <link rel="apple-touch-icon" sizes="180x180" href="/static/resources/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/resources/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/resources/favicon-16x16.png">
@@ -57,6 +73,17 @@
                 <input type="checkbox" name="Sunday" id="sun">
                 <label for="sun">Sunday</label>
             </fieldset>
+            <fieldset id="timeset">
+                <legend>At what time will you work out?</legend>
+                <div>
+                    <label for="starttime">Start time</label>
+                    <input type="time" name="starttime" id="starttime">
+                </div>
+                <div>
+                    <label for="endtime">End time</label>
+                    <input type="time" name="endtime" id="endtime">
+                </div>
+            </fieldset>
             <fieldset id="exerciseset">
                 <legend>Which exercises will you do? Enter a comma-separated list.</legend>
                 <input type="text" id="exerciselist">
@@ -64,7 +91,7 @@
             <fieldset id="partnerset">
                 <legend>Will you have a workout partner? (optional)</legend>
             </fieldset>
-            <button style="width:fit-content;" type="submit">Add workout</button>
+            <button style="width:fit-content;" type="submit" id="submitbtn">Add workout</button>
         </div>
     </div>
     

@@ -33,6 +33,18 @@ def initialise_db():
         );
     """)
 
+    #Make table for users to schedule workouts on different weekdays
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS weeklyschedule(
+        user TEXT,
+        day TEXT,
+        exercises TEXT,
+        partners TEXT,
+        starttime TEXT,
+        endtime TEXT,
+        PRIMARY KEY (user, day)
+        )
+    """)
     connection.commit()
     connection.close()
 
@@ -464,5 +476,31 @@ def leaderboards():
 
 @app.route("/setschedule")
 def setschedule():
-    #Save new/override old scheduled day(s)
-    pass
+    connection = sqlite3.connect("gymbros.db")
+    cursor = connection.cursor()
+
+    currentuser = flask.session["username"]
+    days = flask.request.args.get("days").split(",")
+    exercises = flask.request.args.get("exercises")
+    partners = flask.request.args.get("partners")
+    starttime = flask.request.args.get("start")
+    endtime = flask.request.args.get("end")
+
+
+    #Can schedule same exercise for multiple days
+    for day in days:
+        try:
+            cursor.execute("""
+            INSERT INTO weeklyschedule(user, day, exercises, partners, starttime, endtime)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, [currentuser, day, exercises, partners, starttime, endtime])
+            connection.commit()
+        except:
+            connection.close()
+            return {
+                "data": str(day + " scheduled already")
+            }
+    connection.close()
+    return {
+        "data": "success!"
+    }

@@ -31,7 +31,8 @@ seeddata = [
 ("auba", "meyang","52.22417 21.00796", "artis", "bodybuilding", 100, 100, 100, 100, "Monday,Wednesday,Friday,Sunday", 28000, 1072),
 ("ron", "burgundy", "52.27947 21.11608", "cityfit", "crossfit", 25, 128, 21, 57, "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday", 16170, 559),
 ('donaldduck', 'screwunclescrooge', '52.16576 21.08251', 'calypso', 'olympic', 300, 250, 20, 15, 'Friday,Saturday,Sunday', 55575, 746),
-("mikelarteta", "thegaffer", "52.22035 21.04087", "artis", "bodybuilding", 200, 150, 130, 85, "Monday,Tuesday,Thursday", 0, 0)
+("mikelarteta", "thegaffer", "52.22035 21.04087", "artis", "bodybuilding", 200, 150, 130, 85, "Monday,Tuesday,Thursday", 0, 0), 
+('kai', 'havertz', '52.23271 21.01853', 'artis', 'bodybuilding', 95, 86, 60, 40, 'Monday,Wednesday,Friday', 1597, 75), ('cliffburton', 'anesthesia', '52.24963 21.23084', 'artis', 'bodybuilding', 180, 165, 135, 75, 'Wednesday,Saturday,Sunday', 0, 0)
 ]
 for item in seeddata:
     try:
@@ -52,7 +53,7 @@ cursor.execute("""
             PRIMARY KEY (user1, user2)
         );
 """)
-seeddata = [('mikolajszywala', 'mikelarteta', 1), ('mikelarteta', 'ronniepickering', 0), ('auba', 'mikolajszywala', 1)]
+seeddata = [('mikolajszywala', 'mikelarteta', 1), ('mikelarteta', 'ronniepickering', 1), ('auba', 'mikolajszywala', 1), ('kai', 'ronniepickering', 1), ('cliffburton', 'mikelarteta', 0), ('cliffburton', 'auba', 0), ('cliffburton', 'kai', 1)]
 for item in seeddata:
     try:
         cursor.execute("""
@@ -62,14 +63,26 @@ for item in seeddata:
     except:
         pass
 
+#Make table for scheduling workouts on days of week
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS weeklyschedule(
         user TEXT,
         day TEXT,
         exercises TEXT,
-        partners TEXT
+        partners TEXT,
+        starttime TEXT,
+        endtime TEXT,
         PRIMARY KEY (user, day)
     )
 """)
+seeddata = [('kai', 'Monday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Wednesday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Friday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Tuesday', 'overhead press', 'cliffburton', '19:30', '21:00'), ('cliffburton', 'Thursday', 'squat', '', '05:40', '07:15')]
+for item in seeddata:
+    try:
+        cursor.execute("""
+            INSERT INTO weeklyschedule(user, day, exercises, partners, starttime, endtime)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, item)
+    except:
+        pass
 connection.commit()
 connection.close()
