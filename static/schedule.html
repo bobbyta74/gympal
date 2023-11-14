@@ -55,46 +55,27 @@
     </header>
     <div class="content">
         <h1>Schedule</h1>
-        <div id="scheduleinput">
-            <fieldset id="scheduleset">
-                <legend>Which day do you want to schedule?</legend>
-                <input type="checkbox" name="Monday" id="mon">
-                <label for="mon">Monday</label>
-                <input type="checkbox" name="Tuesday" id="tue">
-                <label for="tue">Tuesday</label>
-                <input type="checkbox" name="Wednesday" id="wed">
-                <label for="wed">Wednesday</label>
-                <input type="checkbox" name="Thursday" id="thu">
-                <label for="thu">Thursday</label>
-                <input type="checkbox" name="Friday" id="fri">
-                <label for="fri">Friday</label>
-                <input type="checkbox" name="Saturday" id="sat">
-                <label for="sat">Saturday</label>
-                <input type="checkbox" name="Sunday" id="sun">
-                <label for="sun">Sunday</label>
-            </fieldset>
-            <fieldset id="timeset">
-                <legend>At what time will you work out?</legend>
-                <div>
-                    <label for="starttime">Start time</label>
-                    <input type="time" name="starttime" id="starttime">
-                </div>
-                <div>
-                    <label for="endtime">End time</label>
-                    <input type="time" name="endtime" id="endtime">
-                </div>
-            </fieldset>
-            <fieldset id="exerciseset">
-                <legend>Which exercises will you do? Enter a comma-separated list.</legend>
-                <input type="text" id="exerciselist">
-            </fieldset>
-            <fieldset id="partnerset">
-                <legend>Will you have a workout partner? (optional)</legend>
-            </fieldset>
-            <button style="width:fit-content;" type="submit" id="submitbtn">Add workout</button>
-        </div>
-        <div id="msg"></div>
+        <a href="setschedule.html">Alter schedule</a>
+        <table id="scheduletable">
+            <tr>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
     </div>
-    
 </body>
 </html>

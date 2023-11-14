@@ -75,7 +75,7 @@ cursor.execute("""
         PRIMARY KEY (user, day)
     )
 """)
-seeddata = [('kai', 'Monday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Wednesday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Friday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Tuesday', 'overhead press', 'cliffburton', '19:30', '21:00'), ('cliffburton', 'Thursday', 'squat', '', '05:40', '07:15')]
+seeddata = [('kai', 'Monday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Wednesday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Friday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Tuesday', 'overhead press', 'cliffburton', '19:30', '21:00'), ('cliffburton', 'Thursday', 'squat', '', '05:40', '07:15'), ('ronniepickering', 'Tuesday', 'skullcrushers', 'mikelarteta,kai', '17:00', '19:00')]
 for item in seeddata:
     try:
         cursor.execute("""

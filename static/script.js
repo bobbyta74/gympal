@@ -458,6 +458,27 @@ if (sortleaderboardby) {
     sortleaderboardby.addEventListener("input", updateleaderboard);
 }
 
+//schedule.html
+let scheduletable = document.querySelector("#scheduletable>tbody");
+async function displayschedule() {
+    let response = await window.fetch("/getschedule");
+    response = await response.json();
+    console.log(response.schedule);
+    let datacells = Array.from(document.querySelector("tr:last-child").children);
+    let daysofweek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    for (let cell of datacells) {
+        let workoutdeets = (response.schedule[daysofweek[datacells.indexOf(cell)]]);
+        workoutdeets = String(workoutdeets);
+        if (workoutdeets[0] == ",") {
+            workoutdeets = workoutdeets.slice(1);
+        }
+        cell.textContent = workoutdeets;
+    }
+}
+if (scheduletable) {
+    displayschedule();
+}
+
 //setschedule.html
 let scheduleinput = document.querySelector("#scheduleinput");
 async function displayfriends() {
@@ -483,7 +504,7 @@ async function addtoschedule(event) {
     let partners = whichselected(document.querySelectorAll("#partnerset input"));
     let response = await window.fetch(`/setschedule?days=${daysscheduled}&exercises=${exerciselist.value}&partners=${partners}&start=${starttime.value}&end=${endtime.value}`);
     response = await response.json();
-    console.log(response.data);
+    msg.textContent = response.data;
 }
 if (scheduleinput) {
     displayfriends();

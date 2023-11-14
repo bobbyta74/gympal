@@ -4,7 +4,7 @@ connection = sqlite3.connect("gymbros.db")
 cursor = connection.cursor()
 
 result = cursor.execute(f"""
-        SELECT * FROM friends
+        SELECT * FROM weeklyschedule
     """).fetchall()
 
 print(result)

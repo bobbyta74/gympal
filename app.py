@@ -474,6 +474,32 @@ def leaderboards():
             "data": result
         }
 
+@app.route("/getschedule")
+def getschedule():
+    connection = sqlite3.connect("gymbros.db")
+    cursor = connection.cursor()
+    currentuser = flask.session["username"]
+
+    scheduleobj = {}
+    for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
+        daysworkouts = []
+        selforganised = cursor.execute("""
+            SELECT user, exercises, partners, starttime, endtime
+            FROM weeklyschedule
+            WHERE user = ? AND day = ?
+        """, [currentuser, day]).fetchone()
+        partnerorganised = cursor.execute("""
+            SELECT user, exercises, partners, starttime, endtime
+            FROM weeklyschedule 
+            WHERE day = ? AND partners LIKE ?
+        """, [day, f"%{currentuser}%"]).fetchall()
+        daysworkouts.append(selforganised)
+        daysworkouts.append(partnerorganised)
+        scheduleobj[day] = daysworkouts
+    return {
+        "schedule": scheduleobj
+    }
+
 @app.route("/setschedule")
 def setschedule():
     connection = sqlite3.connect("gymbros.db")
@@ -493,7 +519,7 @@ def setschedule():
             cursor.execute("""
             INSERT INTO weeklyschedule(user, day, exercises, partners, starttime, endtime)
             VALUES (?, ?, ?, ?, ?, ?)
-        """, [currentuser, day, exercises, partners, starttime, endtime])
+            """, [currentuser, day, exercises, partners, starttime, endtime])
             connection.commit()
         except:
             connection.close()
