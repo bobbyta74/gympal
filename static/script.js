@@ -463,22 +463,51 @@ let scheduletable = document.querySelector("#scheduletable>tbody");
 async function displayschedule() {
     let response = await window.fetch("/getschedule");
     response = await response.json();
+    let daycells = document.querySelector("tr").children;
     let datacells = Array.from(document.querySelector("tr:last-child").children);
     let daysofweek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     for (let cell of datacells) {
         let workoutsforday = (response.schedule[daysofweek[datacells.indexOf(cell)]]);
         let labels = ["Organiser: ", "Exercises: ", "Partners: ", "Start time: ", "End time: "]
         for (let workout of workoutsforday) {
-            console.log(workout);
             if (workout) {
                 let newdiv = document.createElement("div");
+                //Save workout number as ID of div for use in deleting workout/removing self from workout
+                newdiv.setAttribute("id", workout[0]);
                 newdiv.classList.add("workoutdiv");
+                let deetsdiv = document.createElement("div");
+                //Don't display numeric workout ID
+                workout = workout.slice(1);
                 for (let detail of workout) {
-                    newdiv.innerHTML += labels[workout.indexOf(detail)] + detail + "<br>";
+                    let mylabel = labels[workout.indexOf(detail)];
+                    //If there are no workout partners, display "none" instead of literally nothing
+                    let detailtodisplay = detail;
+                    if (mylabel == "Partners: " && detailtodisplay.length == 0) {
+                        detailtodisplay = "<b>none</b>"
+                    }
+                    deetsdiv.innerHTML += "<b>" + labels[workout.indexOf(detail)] + "</b>" + detailtodisplay + "<br>";
                 }
-                cell.appendChild(newdiv)
+                newdiv.appendChild(deetsdiv);
+
+                let removebtn = document.createElement("button");
+                removebtn.classList.add("removebtn");
+                removebtn.textContent = "×";
+                removebtn.addEventListener("click", async function(){
+                    let day = daycells[datacells.indexOf(cell)].textContent;
+                    let response = await window.fetch(`/removefromschedule?workoutid=${newdiv.getAttribute("id")}`);
+                    response = await response.json();
+                    window.location.reload();
+                })
+                newdiv.appendChild(removebtn);
+                cell.appendChild(newdiv);
             }
         }
+        let addbtn = document.createElement("button");
+        addbtn.textContent = "+";
+        addbtn.addEventListener("click", function(){
+            window.location.href = "/static/setschedule.html";
+        })
+        cell.appendChild(addbtn);
     }
 }
 if (scheduletable) {
@@ -511,6 +540,9 @@ async function addtoschedule(event) {
     let response = await window.fetch(`/setschedule?days=${daysscheduled}&exercises=${exerciselist.value}&partners=${partners}&start=${starttime.value}&end=${endtime.value}`);
     response = await response.json();
     msg.textContent = response.data;
+    if (response.data == "success!") {
+        window.location.href = "/static/schedule.html"
+    }
 }
 if (scheduleinput) {
     displayfriends();

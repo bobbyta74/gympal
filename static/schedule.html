@@ -7,7 +7,6 @@
     <script src="script.js" defer></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="dropdown.css">
-
     <style>
         #timeset>div {
             display:flex;
@@ -25,7 +24,35 @@
             border:5px solid red;
             text-align:left;
             margin:5px;
+            display:flex;
+            justify-content: space-between;
+            padding:5px;
         }
+
+        th {
+            width:300px;
+        }
+
+        table button {
+            flex-shrink:0;
+            height:30px;
+            width:30px;
+        }
+
+        .removebtn {
+            align-self:center;
+            font-size:2rem;
+            text-align:center;
+            display:flex;
+            justify-content: center;
+            align-items: center;
+            background-color:#e64c39;
+        }
+
+        .removebtn:active {
+            transform:scale(1.03);
+        }
+
     </style>
 
     <link rel="apple-touch-icon" sizes="180x180" href="/static/resources/apple-touch-icon.png">

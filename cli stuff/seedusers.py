@@ -66,13 +66,13 @@ for item in seeddata:
 #Make table for scheduling workouts on days of week
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS weeklyschedule(
+        id INTEGER PRIMARY KEY,
         user TEXT,
         day TEXT,
         exercises TEXT,
         partners TEXT,
         starttime TEXT,
-        endtime TEXT,
-        PRIMARY KEY (user, day)
+        endtime TEXT
     )
 """)
 seeddata = [('kai', 'Monday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Wednesday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Friday', 'benchpress, deadlift', 'ronniepickering', '19:30', '21:00'), ('kai', 'Tuesday', 'overhead press', 'cliffburton', '19:30', '21:00'), ('cliffburton', 'Thursday', 'squat', '', '05:40', '07:15'), ('ronniepickering', 'Tuesday', 'skullcrushers', 'mikelarteta,kai', '17:00', '19:00')]

@@ -127,7 +127,7 @@ button:active {
 a {
     text-decoration:none;
     font-weight:800;
-    color:var(--link-color)
+    color:var(--link-color);
 }
 
 table {

@@ -4,6 +4,6 @@ cursor = connection.cursor()
 
 #cursor.execute("DROP TABLE IF EXISTS friends")
 #cursor.execute("DROP TABLE IF EXISTS users")
-#cursor.execute("DROP TABLE IF EXISTS weeklyschedule")
+cursor.execute("DROP TABLE IF EXISTS weeklyschedule")
 connection.commit()
 connection.close()

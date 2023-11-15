@@ -3,7 +3,8 @@ import sqlite3
 connection = sqlite3.connect("gymbros.db")
 cursor = connection.cursor()
 
-result = cursor.execute(f"""
+workoutid = 4
+result = cursor.execute("""
         SELECT * FROM weeklyschedule
     """).fetchall()
 

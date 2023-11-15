@@ -36,13 +36,13 @@ def initialise_db():
     #Make table for users to schedule workouts on different weekdays
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS weeklyschedule(
+        id INTEGER PRIMARY KEY,
         user TEXT,
         day TEXT,
         exercises TEXT,
         partners TEXT,
         starttime TEXT,
-        endtime TEXT,
-        PRIMARY KEY (user, day)
+        endtime TEXT
         )
     """)
     connection.commit()
@@ -483,7 +483,7 @@ def getschedule():
     scheduleobj = {}
     for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
         daysworkouts = cursor.execute("""
-            SELECT user, exercises, partners, starttime, endtime
+            SELECT id, user, exercises, partners, starttime, endtime
             FROM weeklyschedule
             WHERE day = ? AND (user = ? OR partners LIKE ?)
             ORDER BY starttime
@@ -523,4 +523,56 @@ def setschedule():
     connection.close()
     return {
         "data": "success!"
+    }
+
+@app.route("/removefromschedule")
+def removefromschedule():
+    connection = sqlite3.connect("gymbros.db")
+    cursor = connection.cursor()
+
+    currentuser = flask.session["username"]
+    workoutid = flask.request.args.get("workoutid")
+
+    workout = cursor.execute("""
+        SELECT * FROM weeklyschedule
+        WHERE id = ?
+    """, [workoutid]).fetchone()
+    workout = list(workout)
+    organisedbyuser = False
+    #Check if organiser is user or someone else
+    if workout[1] == currentuser:
+        organisedbyuser = True
+    else:
+        organisedbyuser = False
+
+    #If current user organised workout, let them delete it
+    if organisedbyuser:
+        cursor.execute("""
+            DELETE FROM weeklyschedule
+            WHERE id = ?
+        """, [workoutid])
+    #If not, unsubscribe only current user from that workout
+    #So that organiser doesn't lose whole workout
+    else:
+        #Avoid awkward leftover commas
+        #E.g. a,b,c -> a,,c
+        #User to delete is either at start/middle of list, or at end 
+        #E.g. to delete "a" from "a,b,c", "a," will be removed
+        # But to delete "c" from "a,b,c", ",c" will be removed
+        if workout[4] == workout[4].replace(currentuser + ",", ""):
+            workout[4] = workout[4].replace("," + currentuser, "")
+        else:
+            workout[4] = workout[4].replace(currentuser + ",", "")
+        #Neither of the 2 above will work if current user is the only partner, but this will
+        workout[4] = workout[4].replace(currentuser, "")
+        cursor.execute("""
+            UPDATE weeklyschedule
+            SET partners = ?
+            WHERE id = ?
+        """, [workout[4], workoutid])
+        
+    connection.commit()
+    connection.close()
+    return {
+        "data": workout[4]
     }
