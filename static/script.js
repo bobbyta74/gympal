@@ -463,16 +463,22 @@ let scheduletable = document.querySelector("#scheduletable>tbody");
 async function displayschedule() {
     let response = await window.fetch("/getschedule");
     response = await response.json();
-    console.log(response.schedule);
     let datacells = Array.from(document.querySelector("tr:last-child").children);
     let daysofweek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     for (let cell of datacells) {
-        let workoutdeets = (response.schedule[daysofweek[datacells.indexOf(cell)]]);
-        workoutdeets = String(workoutdeets);
-        if (workoutdeets[0] == ",") {
-            workoutdeets = workoutdeets.slice(1);
+        let workoutsforday = (response.schedule[daysofweek[datacells.indexOf(cell)]]);
+        let labels = ["Organiser: ", "Exercises: ", "Partners: ", "Start time: ", "End time: "]
+        for (let workout of workoutsforday) {
+            console.log(workout);
+            if (workout) {
+                let newdiv = document.createElement("div");
+                newdiv.classList.add("workoutdiv");
+                for (let detail of workout) {
+                    newdiv.innerHTML += labels[workout.indexOf(detail)] + detail + "<br>";
+                }
+                cell.appendChild(newdiv)
+            }
         }
-        cell.textContent = workoutdeets;
     }
 }
 if (scheduletable) {

@@ -482,21 +482,15 @@ def getschedule():
 
     scheduleobj = {}
     for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
-        daysworkouts = []
-        selforganised = cursor.execute("""
+        daysworkouts = cursor.execute("""
             SELECT user, exercises, partners, starttime, endtime
             FROM weeklyschedule
-            WHERE user = ? AND day = ?
-        """, [currentuser, day]).fetchone()
-        partnerorganised = cursor.execute("""
-            SELECT user, exercises, partners, starttime, endtime
-            FROM weeklyschedule 
-            WHERE day = ? AND partners LIKE ?
-        """, [day, f"%{currentuser}%"]).fetchall()
-        daysworkouts.append(selforganised)
-        daysworkouts.append(partnerorganised)
+            WHERE day = ? AND (user = ? OR partners LIKE ?)
+            ORDER BY starttime
+        """, [day, currentuser, f"%{currentuser}%"]).fetchall()
         scheduleobj[day] = daysworkouts
     return {
+        #Dictionary with 2D list of workout tuples for each day
         "schedule": scheduleobj
     }
 
