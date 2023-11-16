@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="dropdown.css">
     <link rel="icon" type="image/x-icon" href="/static/resources/favicon.ico">
     <style>
+        #workoutreminder {
+            margin-top:0;
+        }
+
         #cardcontainer {
             display:flex;
             gap:20px;
@@ -47,7 +51,7 @@
             font-size:0.4rem;
             align-self:center;
             font-weight:400;
-            color:var(--text-color);
+            color:#e8e6e3;
         }
 
 
@@ -84,8 +88,8 @@
         </div>
     </header>
     <div class="content">
-        <h1 style="align-self:center;">Home</h1>
-        <h2 style="align-self:center;" id="welcomemsg"></h2>
+        <h1 style="align-self:center;" id="welcomemsg"></h1>
+        <h3 style="align-self:center;" id="workoutreminder"></h3>
 
         <div id="cardcontainer">
             <button id="matchescard" class="card">

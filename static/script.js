@@ -160,13 +160,36 @@ if (submitregister) {
 let welcomemsg = document.querySelector("#welcomemsg");
 
 //Needs to be async, so made a function for it
-async function displayWelcomeMsg() {
+async function displaywelcome() {
     let response = await window.fetch("/username");
     response = await response.json();
+    //Welcome message
     welcomemsg.textContent = "Welcome, " + response.username;
+    
+    //Workout reminder
+    const d = new Date();
+    let daysofweek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    let today = daysofweek[d.getDay()];
+    response = await window.fetch("/getschedule");
+    response = await response.json();
+    console.log(response.schedule);
+    workoutreminder.innerHTML += "<b>Today's workout(s):</b>"
+    if (response.schedule[today].length > 0) {
+        for (let workout of response.schedule[today]) {
+            if (workout[1] == response.username || workout[3].indexOf(response.username) > -1) {
+                //Same deal as in Python - remove current user and redundant comma from output participants
+                //If first line (let othetparticipants...) doesn't work, 2nd line does
+                let otherparticipants = String(workout[3] + "," + workout[1]).replace(response.username + ",", "");
+                otherparticipants = otherparticipants.replace("," + response.username, "")
+                workoutreminder.innerHTML += `<li>${workout[2]} with ${otherparticipants}, ${workout[4]}-${workout[5]}</li>`;
+            }
+        }
+    } else {
+        workoutreminder.innerHTML += "None! Enjoy your rest day, bro!"
+    }
 }
 if (welcomemsg) {
-    displayWelcomeMsg();
+    displaywelcome();
     for (let i of document.querySelectorAll("#cardcontainer button")) {
         i.addEventListener("click", function() {
             window.location.href = `${i.getAttribute("id").slice(0, -4)}.html`;
@@ -219,6 +242,9 @@ async function displayrequests() {
             window.fetch(`/processfriendreq?from=${wannabegymbro}&type=reject`);
             notif.innerHTML = "Request rejected";
         });
+    }
+    if (request.data.length == 0) {
+        notifscontainer.innerHTML = "No notifications right now. Look at you, Mx Popular!"
     }
 }
 if (notifscontainer) {

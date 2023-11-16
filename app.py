@@ -155,6 +155,7 @@ def username():
         return {
             "username": False
         }
+
 @app.route("/logout")
 def logout():
     del flask.session["username"]
@@ -491,7 +492,8 @@ def getschedule():
         scheduleobj[day] = daysworkouts
     return {
         #Dictionary with 2D list of workout tuples for each day
-        "schedule": scheduleobj
+        "schedule": scheduleobj,
+        "username": currentuser
     }
 
 @app.route("/setschedule")

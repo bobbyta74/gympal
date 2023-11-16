@@ -6,15 +6,15 @@ body {
     --bg-color:#181a1b;
     --table-border-color:#474d50;
     --link-color:#3369ff;
-    --card-bg:#232627;
+    --card-bg:#102b61;
     --dropdown-bg:#2b2a33;
 }
 
 body.light-mode {
     --text-color:black;
-    --bg-color:white;
+    --bg-color:#e8e6e3;
     --table-border-color:black;
-    --card-bg:#ddd;
+    --card-bg:#102b61;
     --dropdown-bg:rgba(255, 255, 255, 0.979);
 }
 
@@ -163,6 +163,7 @@ fieldset {
 
 .card {
     background-color: var(--card-bg);
+    color:#e8e6e3;
     padding:15px;
     flex:1;
     border-radius:10px;
@@ -170,7 +171,6 @@ fieldset {
     text-align:center;
     height:auto;
     border:2px solid var(--table-border-color);
-    color:var(--text-color);
 }
 
 .card>img {
@@ -179,4 +179,8 @@ fieldset {
 
 input[type="checkbox"] {
     border:5px solid black;
+}
+
+li {
+    list-style-position: inside;
 }
