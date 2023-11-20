@@ -185,7 +185,7 @@ async function displaywelcome() {
             }
         }
     } else {
-        workoutreminder.innerHTML += "None! Enjoy your rest day, bro!"
+        workoutreminder.innerHTML += " None! Enjoy your rest day, bro!"
     }
 }
 if (welcomemsg) {
