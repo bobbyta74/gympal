@@ -17,8 +17,8 @@ def initialise_db():
             bench INTEGER,
             overhead INTEGER,
             schedule TEXT,
-            monthsvolume INTEGER,
-            monthstimespent INTEGER
+            volume INTEGER,
+            timespent INTEGER
         )
     """)
     #Make table linking users as friends
@@ -133,7 +133,7 @@ def register():
     else:
         #Insert flask.requests into new database record
         cursor.execute("""
-            INSERT INTO users(username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule, monthsvolume, monthstimespent)
+            INSERT INTO users(username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule, volume, timespent)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)
         """, [username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule])
         connection.commit()
@@ -199,7 +199,7 @@ def matches():
     """, [ username ]).fetchone()
 
     #Convert query result from tuple into dictionary (easier to read/remmenber key names than indexes)
-    #Don't need month's volume and time spent, so not included
+    #Don't need volume and time spent, so not included
     column_names = ["username", "password", "coords", "membership", "style", "deadlift", "squat", "bench", "overhead", "schedule"]
     result = {column_names[i]: result[i] for i in range(len(column_names))}
 
@@ -377,7 +377,7 @@ def getfriends():
 import json
 @app.route("/workout", methods=["GET"])
 def workout():
-    #Update records and month's volume 
+    #Update records and total volume 
 
     connection = sqlite3.connect("gymbros.db")
     cursor = connection.cursor()
@@ -393,7 +393,7 @@ def workout():
         WHERE username = ?
     """, [ username ]).fetchone()
     #Convert to dictionary for easier access
-    column_names = ["username", "password", "coords", "membership", "style", "deadlift", "squat", "bench", "overhead", "schedule", "monthsvolume", "monthstimespent"]
+    column_names = ["username", "password", "coords", "membership", "style", "deadlift", "squat", "bench", "overhead", "schedule", "volume", "timespent"]
     result = {column_names[i]: result[i] for i in range(len(column_names))}
 
     #Update PR if new
@@ -411,9 +411,9 @@ def workout():
     #Add session volume and time spent to month's values
     cursor.execute("""
         UPDATE users
-        SET monthsvolume = ?, monthstimespent = ?
+        SET volume = ?, timespent = ?
         WHERE username = ?
-    """, [ (result["monthsvolume"] + sessionvolume), (result["monthstimespent"] + sessionduration), username ])
+    """, [ (result["volume"] + sessionvolume), (result["timespent"] + sessionduration), username ])
 
     connection.commit()
     connection.close()
@@ -431,14 +431,14 @@ def leaderboards():
     criterion = flask.request.args.get("criterion")
     if criterion != "username":
         result = cursor.execute(f"""
-            SELECT username, deadlift, squat, bench, overhead, (deadlift + squat) AS lowerbody, (bench + overhead) AS upperbody, (deadlift + squat + bench + overhead) AS bigtotal, monthsvolume, monthstimespent
+            SELECT username, deadlift, squat, bench, overhead, (deadlift + squat) AS lowerbody, (bench + overhead) AS upperbody, (deadlift + squat + bench + overhead) AS bigtotal, volume, timespent
             FROM users
             ORDER BY {criterion} DESC
         """).fetchall()
     else:
         #Sort alphabetically by default
         result = cursor.execute(f"""
-            SELECT username, deadlift, squat, bench, overhead, (deadlift + squat) AS lowerbody, (bench + overhead) AS upperbody, (deadlift + squat + bench + overhead) AS bigtotal, monthsvolume, monthstimespent
+            SELECT username, deadlift, squat, bench, overhead, (deadlift + squat) AS lowerbody, (bench + overhead) AS upperbody, (deadlift + squat + bench + overhead) AS bigtotal, volume, timespent
             FROM users
             ORDER BY {criterion}
         """).fetchall()

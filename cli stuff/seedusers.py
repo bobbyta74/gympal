@@ -17,8 +17,8 @@ cursor.execute("""
         bench INTEGER,
         overhead INTEGER,
         schedule TEXT,
-        monthsvolume INTEGER,
-        monthstimespent INTEGER
+        volume INTEGER,
+        timespent INTEGER
     )
 """)
 connection.commit()
@@ -32,12 +32,14 @@ seeddata = [
 ("ron", "burgundy", "52.27947 21.11608", "cityfit", "crossfit", 25, 128, 21, 57, "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday", 16170, 559),
 ('donaldduck', 'screwunclescrooge', '52.16576 21.08251', 'calypso', 'olympic', 300, 250, 20, 15, 'Friday,Saturday,Sunday', 55575, 746),
 ("mikelarteta", "thegaffer", "52.22035 21.04087", "artis", "bodybuilding", 200, 150, 130, 85, "Monday,Tuesday,Thursday", 0, 0), 
-('kai', 'havertz', '52.23271 21.01853', 'artis', 'bodybuilding', 95, 86, 60, 40, 'Monday,Wednesday,Friday', 1597, 75), ('cliffburton', 'anesthesia', '52.24963 21.23084', 'artis', 'bodybuilding', 180, 165, 135, 75, 'Wednesday,Saturday,Sunday', 0, 0)
+('kai', 'havertz', '52.23271 21.01853', 'artis', 'bodybuilding', 95, 86, 60, 40, 'Monday,Wednesday,Friday', 1597, 75), 
+('cliffburton', 'anesthesia', '52.24963 21.23084', 'artis', 'bodybuilding', 180, 165, 135, 75, 'Wednesday,Saturday,Sunday', 0, 0),
+('michalgladyszczak', 'legenddesgrime', '52.18808 20.98865', 'artis', 'bodybuilding', 130, 125, 90, 45, 'Tuesday,Thursday,Saturday', 1940, 35)
 ]
 for item in seeddata:
     try:
         cursor.execute("""
-            INSERT INTO users(username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule, monthsvolume, monthstimespent)
+            INSERT INTO users(username, password, coords, membership, style, deadlift, squat, bench, overhead, schedule, volume, timespent)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, item)
     except:

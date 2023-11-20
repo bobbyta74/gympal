@@ -204,7 +204,7 @@ async function displayusercard() {
     response = await response.json();
 
     console.log(response.userdetails)
-    let keys = ["Username", "Address", "Gym membership", "Style", "Deadlift record", "Squat record", "Benchpress record", "Overhead press record", "Schedule", "Volume lifted this month", "Time at gym this month"]
+    let keys = ["Username", "Address", "Gym membership", "Style", "Deadlift record", "Squat record", "Benchpress record", "Overhead press record", "Schedule", "Volume lifted", "Time at gym"]
     for (let data of response.userdetails) {
         const label = keys[response.userdetails.indexOf(data)];
         labels.innerHTML += label + ":<br><br>";
@@ -429,6 +429,7 @@ if (sortleaderboardby) {
     async function addleaderboardcells() {
         //Choose either global or friends-only leaderboard
         let leaderboardscale = document.querySelector("input[name='scale']:checked").getAttribute("id").slice(5);
+        console.log(sortleaderboardby.value)
         //Fetch table ordered by chosen criterion and add row of cells for every record
         let response = await window.fetch(`/leaderboards?criterion=${sortleaderboardby.value}&scale=${leaderboardscale}`);
         response = await response.json();
@@ -453,14 +454,14 @@ if (sortleaderboardby) {
                                         <th>Lower body total</th>
                                         <th>Upper body total</th>
                                         <th>Big lift total</th>
-                                        <th>Volume lifted this month</th>
-                                        <th>Time spent at the gym this month</th>
+                                        <th>Volume lifted</th>
+                                        <th>Time spent at the gym</th>
                                     </tr>`
         addleaderboardcells();
 
         //Highlight the sorting criterion
         //But don't highlight if sorting by username
-        const sortingcriteria = ["", "deadlift", "squat", "bench", "overhead", "lowerbody", "upperbody", "bigtotal", "monthsvolume", "monthstimespent"];
+        const sortingcriteria = ["", "deadlift", "squat", "bench", "overhead", "lowerbody", "upperbody", "bigtotal", "volume", "timespent"];
         if (sortleaderboardby.value != "username") {
             let column2behighlighted = sortingcriteria.indexOf(sortleaderboardby.value);
             let tableheadings = leaderboardtable.querySelector("tr").querySelectorAll("th");
