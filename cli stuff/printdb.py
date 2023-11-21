@@ -5,7 +5,7 @@ cursor = connection.cursor()
 
 workoutid = 4
 result = cursor.execute("""
-        SELECT * FROM users
+        SELECT * FROM weeklyschedule
     """).fetchall()
 
 print(result)

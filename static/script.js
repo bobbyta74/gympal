@@ -564,11 +564,12 @@ async function addtoschedule(event) {
     event.preventDefault();
     let daysscheduled = whichselected(document.querySelectorAll("#scheduleset input"));
     let partners = whichselected(document.querySelectorAll("#partnerset input"));
-    let response = await window.fetch(`/setschedule?days=${daysscheduled}&exercises=${exerciselist.value}&partners=${partners}&start=${starttime.value}&end=${endtime.value}`);
-    response = await response.json();
-    msg.textContent = response.data;
-    if (response.data == "success!") {
-        window.location.href = "/static/schedule.html"
+    if (daysscheduled == "" || exerciselist.value.trim().length == 0 || starttime.value == "" || endtime.value == "" || endtime.value <= starttime.value) {
+        msg.textContent = "Workout details invalid. Check again."
+    } else {
+        let response = await window.fetch(`/setschedule?days=${daysscheduled}&exercises=${exerciselist.value}&partners=${partners}&start=${starttime.value}&end=${endtime.value}`);
+        response = await response.json();
+        msg.textContent = response.data;
     }
 }
 if (scheduleinput) {

@@ -520,11 +520,11 @@ def setschedule():
         except:
             connection.close()
             return {
-                "data": str(day + " scheduled already")
+                "data": "Error"
             }
     connection.close()
     return {
-        "data": "success!"
+        "data": "Success!"
     }
 
 @app.route("/removefromschedule")
