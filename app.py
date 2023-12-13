@@ -4,6 +4,7 @@ import flask, sqlite3
 def initialise_db():
     connection = sqlite3.connect("gymbros.db")
     cursor = connection.cursor()
+
     #Make table containing all users' data
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users(
@@ -21,9 +22,11 @@ def initialise_db():
             timespent INTEGER
         )
     """)
+
     #Make table linking users as friends
-    #User1 is the friendor, user2 is the friendee
+    #user1 is the requester, user2 is the accepter/rejecter
     #status set as 0/false when friend request made, changed to 1/true when accepted by other user
+    #
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS friends(
             user1 TEXT,
@@ -33,9 +36,9 @@ def initialise_db():
         );
     """)
 
-    #Make table for users to schedule workouts on different weekdays
+    #Make table containing details of individual scheduled workouts
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS weeklyschedule(
+    CREATE TABLE IF NOT EXISTS workouts(
         id INTEGER PRIMARY KEY,
         user TEXT,
         day TEXT,
@@ -485,7 +488,7 @@ def getschedule():
     for day in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]:
         daysworkouts = cursor.execute("""
             SELECT id, user, exercises, partners, starttime, endtime
-            FROM weeklyschedule
+            FROM workouts
             WHERE day = ? AND (user = ? OR partners LIKE ?)
             ORDER BY starttime
         """, [day, currentuser, f"%{currentuser}%"]).fetchall()
@@ -513,7 +516,7 @@ def setschedule():
     for day in days:
         try:
             cursor.execute("""
-            INSERT INTO weeklyschedule(user, day, exercises, partners, starttime, endtime)
+            INSERT INTO workouts(user, day, exercises, partners, starttime, endtime)
             VALUES (?, ?, ?, ?, ?, ?)
             """, [currentuser, day, exercises, partners, starttime, endtime])
             connection.commit()
@@ -536,7 +539,7 @@ def removefromschedule():
     workoutid = flask.request.args.get("workoutid")
 
     workout = cursor.execute("""
-        SELECT * FROM weeklyschedule
+        SELECT * FROM workouts
         WHERE id = ?
     """, [workoutid]).fetchone()
     workout = list(workout)
@@ -550,7 +553,7 @@ def removefromschedule():
     #If current user organised workout, let them delete it
     if organisedbyuser:
         cursor.execute("""
-            DELETE FROM weeklyschedule
+            DELETE FROM workouts
             WHERE id = ?
         """, [workoutid])
     #If not, unsubscribe only current user from that workout
@@ -568,7 +571,7 @@ def removefromschedule():
         #Neither of the 2 above will work if current user is the only partner, but this will
         workout[4] = workout[4].replace(currentuser, "")
         cursor.execute("""
-            UPDATE weeklyschedule
+            UPDATE workouts
             SET partners = ?
             WHERE id = ?
         """, [workout[4], workoutid])

@@ -67,7 +67,7 @@ for item in seeddata:
 
 #Make table for scheduling workouts on days of week
 cursor.execute("""
-    CREATE TABLE IF NOT EXISTS weeklyschedule(
+    CREATE TABLE IF NOT EXISTS workouts(
         id INTEGER PRIMARY KEY,
         user TEXT,
         day TEXT,
@@ -81,7 +81,7 @@ seeddata = [('kai', 'Monday', 'benchpress, deadlift', 'ronniepickering', '19:30'
 for item in seeddata:
     try:
         cursor.execute("""
-            INSERT INTO weeklyschedule(user, day, exercises, partners, starttime, endtime)
+            INSERT INTO workouts(user, day, exercises, partners, starttime, endtime)
             VALUES (?, ?, ?, ?, ?, ?)
         """, item)
     except:

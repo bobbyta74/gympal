@@ -128,8 +128,6 @@ if (submitregister) {
         //23 elm street, portland, usa
         const streetafternumber = /^\d+ [^,]+, [^,]+, [^,]+$/;
 
-        
-
         //Expression validating all inputs
         const formvalid = username.value.trim().length > 0 && pwd.value.trim().length > 0 && (numberafterstreet.test(address.value) || streetafternumber.test(address.value)) && style && Number(deadlift.value) > 0 && Number(squat.value) > 0 && Number(bench.value) > 0 && Number(overhead.value) > 0 && myschedule != "";
         
@@ -181,7 +179,12 @@ async function displaywelcome() {
                 //If first line (let othetparticipants...) doesn't work, 2nd line does
                 let otherparticipants = String(workout[3] + "," + workout[1]).replace(response.username + ",", "");
                 otherparticipants = otherparticipants.replace("," + response.username, "")
-                workoutreminder.innerHTML += `<li>${workout[2]} with ${otherparticipants}, ${workout[4]}-${workout[5]}</li>`;
+                console.log(otherparticipants)
+                if (otherparticipants.trim() == "") {
+                    workoutreminder.innerHTML += `<li>${workout[2]} alone, ${workout[4]}-${workout[5]}</li>`;
+                } else {
+                    workoutreminder.innerHTML += `<li>${workout[2]} with ${otherparticipants}, ${workout[4]}-${workout[5]}</li>`;
+                }
             }
         }
     } else {
@@ -490,43 +493,54 @@ let scheduletable = document.querySelector("#scheduletable>tbody");
 async function displayschedule() {
     let response = await window.fetch("/getschedule");
     response = await response.json();
-    let daycells = document.querySelector("tr").children;
-    let datacells = Array.from(document.querySelector("tr:last-child").children);
+    let daycells = document.querySelector("tr").children; //select all cells in 1st row of schedule (weekday names)
+    let datacells = Array.from(document.querySelector("tr:last-child").children); //select all cells in 2nd row of schedule table (below weekday names)
     let daysofweek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    console.log(response.schedule)
     for (let cell of datacells) {
-        let workoutsforday = (response.schedule[daysofweek[datacells.indexOf(cell)]]);
-        let labels = ["Organiser: ", "Exercises: ", "Partners: ", "Start time: ", "End time: "]
-        for (let workout of workoutsforday) {
+        //response.schedule is an object - there is a 2D array of workouts (which are 1D arrays) scheduled for every day of the week
+        /*e.g. {
+            Wednesday: [[ 10, "mikolajszywala", "benchpress,overhead,squat", … ], [ 15, "mikolajszywala", "deadlift", … ]]
+            Friday: [[ 11, "mikolajszywala", "benchpress,overhead,squat", … ]]
+        }
+        */
+
+       //Convert index of current cell to name of weekday to access workouts for this day (e.g. cell of index 2 is Wednesday, so get response.schedule["Wednesday"])
+       //workoutsforday = response.schedule["Wednesday"] = [[ 10, "mikolajszywala", "benchpress,overhead,squat", … ], [ 15, "mikolajszywala", "deadlift", … ]]
+        let workoutsforday = (response.schedule[daysofweek[datacells.indexOf(cell)]]); 
+        let labels = ["Organiser: ", "Exercises: ", "Partners: ", "Start time: ", "End time: "] //Labels that will be added to the workout element
+        for (let workout of workoutsforday) { //Iterate through 2D array - each workout is a 1D list
             if (workout) {
-                let newdiv = document.createElement("div");
-                //Save workout number as ID of div for use in deleting workout/removing self from workout
-                newdiv.setAttribute("id", workout[0]);
-                newdiv.classList.add("workoutdiv");
-                let deetsdiv = document.createElement("div");
-                //Don't display numeric workout ID
-                workout = workout.slice(1);
-                for (let detail of workout) {
-                    let mylabel = labels[workout.indexOf(detail)];
+                let workoutdiv = document.createElement("div");
+                workoutdiv.setAttribute("id", workout[0]); //Set ID of div to workoutID so that you know which workout should be deleted from database when remove button is clicked
+                workoutdiv.classList.add("workoutdiv"); //Add class "workoutdiv" for styling
+                let deetsdiv = document.createElement("div"); //The text portion of the workout div (part without the remove button)
+                workout = workout.slice(1); //Remove workoutID from workout list to avoid displaying workoutID to user (because it's useless and confusing to them)
+                for (let detail of workout) { //Iterate through 1D list (e.g. [ 10, "mikolajszywala", "benchpress,overhead,squat", … ])
+                    let mylabel = labels[workout.indexOf(detail)]; //Get the label corresponding to the detail (e.g. detail "mikolajszywala" corresponds to label "Organiser: ")
+                    
                     //If there are no workout partners, display "none" instead of literally nothing
-                    let detailtodisplay = detail;
+                    let detailtodisplay = detail; /*Have to make new variable "detailtodisplay", 
+                    as changing "detail" doesn't actually change the element in the 1D array (needed on line 527) 
+                    */
                     if (mylabel == "Partners: " && detailtodisplay.length == 0) {
                         detailtodisplay = "<b>none</b>"
                     }
-                    deetsdiv.innerHTML += "<b>" + labels[workout.indexOf(detail)] + "</b>" + detailtodisplay + "<br>";
+                    deetsdiv.innerHTML += "<b>" + labels[workout.indexOf(detail)] + "</b>" + detailtodisplay + "<br>"; //Display label and detail (e.g. Organiser: mikolajszywala)
                 }
-                newdiv.appendChild(deetsdiv);
+                workoutdiv.appendChild(deetsdiv); 
 
                 let removebtn = document.createElement("button");
                 removebtn.classList.add("removebtn");
                 removebtn.textContent = "×";
                 removebtn.addEventListener("click", async function(){
                     let day = daycells[datacells.indexOf(cell)].textContent;
-                    let response = await window.fetch(`/removefromschedule?workoutid=${newdiv.getAttribute("id")}`);
+                    let response = await window.fetch(`/removefromschedule?workoutid=${workoutdiv.getAttribute("id")}`);
                     response = await response.json();
                     window.location.reload();
                 })
-                newdiv.appendChild(removebtn);
-                cell.appendChild(newdiv);
+                workoutdiv.appendChild(removebtn);
+                cell.appendChild(workoutdiv);
             }
         }
         let addbtn = document.createElement("button");
