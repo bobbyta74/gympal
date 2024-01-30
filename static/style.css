@@ -1,4 +1,4 @@
-body {
+body { /*dark mode (default)*/
     font-family:"Lato", sans-serif;
     display:flex;
     flex-direction: column;
@@ -10,7 +10,7 @@ body {
     --dropdown-bg:#2b2a33;
 }
 
-body.light-mode {
+body.light-mode { /*body class is toggled in JS to switch theme*/ 
     --text-color:black;
     --bg-color:#e8e6e3;
     --table-border-color:black;
@@ -18,7 +18,7 @@ body.light-mode {
     --dropdown-bg:rgba(255, 255, 255, 0.979);
 }
 
-body {
+body { 
     color:var(--text-color);
     background-color: var(--bg-color);
 }

@@ -25,8 +25,8 @@ def initialise_db():
 
     #Make table linking users as friends
     #user1 is the requester, user2 is the accepter/rejecter
-    #status set as 0/false when friend request made, changed to 1/true when accepted by other user
-    #
+    #status set as 0/false while friend request unaccepted, changed to 1/true when accepted by other user
+    #Composite primary key line 35 to avoid duplicate records of the same 2 friends
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS friends(
             user1 TEXT,
@@ -77,7 +77,7 @@ def login():
         WHERE username = ?
     """, [ username ]).fetchone()
     if result != None and password == result[1]:
-        #Save username between routes (for use in other sites)
+        #Save username between routes (for use on other pages)
         flask.session["username"] = username
         return {
             "type": "success"
@@ -112,8 +112,8 @@ def register():
     geolocator = Nominatim(user_agent="gympal")
     location = geolocator.geocode(address)
     try:
+        #Format coords as space-separated string (e.g. "3.45675 78.34532")
         coords = str(round(location.latitude, 5)) + " " + str(round(location.longitude, 5))
-        print(coords)
     except:
         return {
             "error": True,
@@ -232,36 +232,36 @@ def matches():
         SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule 
         FROM users
         WHERE membership = ? AND style = ? AND username <> ?
-        """, [ result["membership"], result["style"], result["username"] ]).fetchall()
-        possible_gymbros = []
-        for gymbro in queried_gymbros:
+        """, [ result["membership"], result["style"], result["username"] ]).fetchall() #Outputs a list of tuples, each tuple represents a potential gymbro
+        possible_gymbros = [] #Make new 2D list to store gymbros as lists, not tuples
+        for gymbro in queried_gymbros: #Iterate through potential gymbros
             #Get the coordinates of user and gymbro
-            usercoords = result["coords"]
-            gymbrocoords = gymbro[1]
+            usercoords = result["coords"] #Coordinates of current user
+            gymbrocoords = gymbro[1] #Coordinates of potential gymbro
+            #Convert coordinates from space-separated string to tuple form to use in geopy distance function
             usercoords = usercoords.split()[0], usercoords.split()[1]
             gymbrocoords = gymbrocoords.split()[0], gymbrocoords.split()[1]
-            #Add distance field to query results
-            gymbro_as_list = list(gymbro)
-            gymbro_as_list.append(round(geopy.distance.geodesic(usercoords, gymbrocoords).km, 3))
-            possible_gymbros.append(gymbro_as_list)
-            #Sort the query result by distance
-            possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=False)
+
+            gymbro_as_list = list(gymbro) #Convert potential gymbro from tuple form to list because can't append to tuple
+            gymbro_as_list.append(round(geopy.distance.geodesic(usercoords, gymbrocoords).km, 3)) #Add to potential gymbro (list) the distance between them and the current user (3dp)
+            possible_gymbros.append(gymbro_as_list) #Add potential gymbro (list) to 2D list of gymbros
+            possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=False) #Sort 2D list of gymbros by distance (last item in 1D list)
     #schedule
     elif sorting_factor == "Schedule coverage (%)":
-        #Have to manipulate strings to compare here, can't be done in SQL only :(((
-        def schedulecoverage(myschedule, otherschedule):
+        def schedulecoverage(myschedule, otherschedule): #Returns how much of myschedule is included in otherschedule (e.g. "mon, tue, wed" is 67% covered in "mon, tue, fri")
             #Turn both comma-separated strings into lists
             a = myschedule.split(",")
-            origlength = len(a)
+            origlength = len(a) #Count initial length of myschedule (to be used in later calculation)
             b = otherschedule.split(",")
-            #Try to subtract every day in person b's schedule from person a's schedule, if every day is left then there is no coverage
+
+            #Remove days from myschedule that are covered by otherschedule, if every day is left then there is no coverage, if no days are left coverage = 100%
             for day in b:
                 try:
                     a.remove(day)
                 except:
-                    pass
-            return int(100 - (len(a)/origlength*100))
-        #All possible gymbros (unsorted)
+                    pass #try/except used to avoid errors trying to remove something that isn't there (e.g. "thu" from [mon, wed, fri])
+            return int(100 - (len(a)/origlength*100)) #Return proportion of days in common (days that were removed/did NOT remain) to total days in myschedule
+
         queried_gymbros = cursor.execute("""
         SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule
         FROM users
@@ -271,9 +271,9 @@ def matches():
         for gymbro in queried_gymbros:
             #Add schedule coverage to each gymbro's record tuple (in the query result, not in the actual table)
             gymbro_as_list = list(gymbro)
-            gymbro_as_list.append(schedulecoverage(result["schedule"], gymbro[8]))
+            gymbro_as_list.append(schedulecoverage(result["schedule"], gymbro[8])) #gymbro[8] is potential gymbro's schedule
             possible_gymbros.append(gymbro_as_list)
-        #Sort the query result by gymbros' schedule coverages
+        #Sort the query result by gymbros' schedule coverages (last item in 1D list)
         possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=True)
     
     return {
@@ -385,7 +385,9 @@ def workout():
     connection = sqlite3.connect("gymbros.db")
     cursor = connection.cursor()
 
-    sessionrecords = json.loads(flask.request.args.get("records"))
+    #sessionrecords is a dictionary of the biggest lifts of the current session in every category (e.g. "deadlift": 95, "squat": 80)
+    sessionrecords = json.loads(flask.request.args.get("records")) #Convert JSON string back into dictionary 
+                                                                    #(couldn't send dictionary as a parameter so had to convert to JSON)
     sessionvolume = int(flask.request.args.get("volume"))
     sessionduration = int(flask.request.args.get("timespent"))
 
@@ -395,21 +397,21 @@ def workout():
         SELECT * FROM users
         WHERE username = ?
     """, [ username ]).fetchone()
-    #Convert to dictionary for easier access
+    #Convert to dictionary to make references more understandable (i.e. result["volume"] instead of result[5])
     column_names = ["username", "password", "coords", "membership", "style", "deadlift", "squat", "bench", "overhead", "schedule", "volume", "timespent"]
-    result = {column_names[i]: result[i] for i in range(len(column_names))}
+    result = {column_names[i]: result[i] for i in range(len(column_names))} #make dictionary joining corresponding key:value pairs from 2 lists
 
-    #Update PR if new
-    newrecords = ""
-    for lift in ["deadlift", "squat", "bench", "overhead"]:
-        sessionrecords[lift] = int(sessionrecords[lift])
-        if sessionrecords[lift] > result[lift]:
+    #Update personal record if new
+    newrecords = "" #output string of lift categories in which new records were set (e.g. "new records in: deadlift, benchpress")
+    for exercise in ["deadlift", "squat", "bench", "overhead"]:
+        sessionrecords[exercise] = int(sessionrecords[exercise])
+        if sessionrecords[exercise] > result[exercise]: #compare record lift in category from current session to all-time record
             cursor.execute(f"""
                 UPDATE users
-                SET {lift} = ?
+                SET {exercise} = ?
                 WHERE username = ?
-            """, [ sessionrecords[lift], username ])
-            newrecords += lift + ", " 
+            """, [ sessionrecords[exercise], username ]) #if greater than the all-time record, the current session record is the new all-time record
+            newrecords += exercise + ", " #add current lift category to output (e.g. if the new record is deadlift, "deadlift" is added to string of new records)
 
     #Add session volume and time spent to month's values
     cursor.execute("""

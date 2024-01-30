@@ -18,13 +18,14 @@ addEventListener("load", function() {
         i.value = 0;
     }
 })
-//Every page defaults to dark mode on load
+//Dark mode is tthe default style, so no if statement needed for it
 if (localStorage.getItem("displaymode") == "light") {
-    document.body.classList.add("light-mode");
+    document.body.classList.add("light-mode"); //Light mode class has different colours
 }
-//Enable light/dark mode toggling
+//Toggle light/dark mode
 togglelightmode.addEventListener("click", function() {
-    document.body.classList.toggle("light-mode");
+    document.body.classList.toggle("light-mode"); //Add/remove light-mode from class list
+    //Toggle saved colour mode - change to opposite of current mode
     if (localStorage.getItem("displaymode") == "dark") {
         localStorage.setItem("displaymode", "light")
     } else {
@@ -323,24 +324,25 @@ if (workoutform) {
     let howmanychecked = 0;
     for (let mycheckbox of checkboxlist) {
         mycheckbox.addEventListener("input", function() {
-            //Convert checkbox id to container div id
-            //E.g. deadlift? -> deadliftdiv
+            //Convert checkbox id to container div id (e.g. bench? -> benchdiv)
             let correspondingdiv = document.querySelector(`#${mycheckbox.getAttribute("id").slice(0,-1)+"div"}`)
             
-            //Add/subtract checked box counter and toggle visibility
-            if (mycheckbox.checked) {
+            if (mycheckbox.checked) { 
+                //If checkbox checked then increment counter and show corresponding input div (e.g. deadlift checked -> show deadlift input)
                 howmanychecked += 1;
                 correspondingdiv.style.display = "flex";
                 correspondingdiv.style.justifyContent = "space-between";
             } else {
+                //If checkbox has been unchecked then decrement hide corresponding input div
                 howmanychecked -= 1;
                 correspondingdiv.style.display = "none";
             }
-            //Only show text inputs if at least 1 checkbox is selected
+
+            //Only show fieldset of text inputs if at least 1 checkbox is selected
             if (howmanychecked > 0) {
                 textinputs.style.display = "flex";
             } else {
-                textinputs.style.visibility = "none";
+                textinputs.style.display = "none";
             }
         })
     }
@@ -349,26 +351,20 @@ if (workoutform) {
     let timerbutton = document.querySelector("button#timer");
     let timespent = 0; //seconds, convert later to avoid abuse of rounding up minute
     let starttime = -1;
-    let clickcounter = 0;
-    let timerstopped = true;
+    let timer_running = false;
     timerbutton.addEventListener("click", function(event) {
-        //Algorithmic thinking
         event.preventDefault();
-        clickcounter += 1;
-        //Get current time
-        let now = new Date().getTime();
-        if (clickcounter % 2 == 1) {
-            //Odd clicks start the timer
-            starttime = now;
-            timerstopped = false;
-            timerbutton.textContent = "Stop timer"
-        } else {
-            //Even clicks end timer and add timediff to timespent
-            let timediff = (now - starttime)/1000;
-            timespent += timediff;
-            timerstopped = true;
+        let now = new Date().getTime(); //Get current time
+        timer_running = !timer_running; //Start/resume timer if not running/stop if running
+
+        if (timer_running) { //Timer started/resumed
+            starttime = now; //Set new reference start time
+            timerbutton.textContent = "Stop timer"; //Clicking on timer again will stop it
+        } else { //Timer paused
+            let timediff = (now - starttime)/1000; //Time elapsed from last click 
+            timespent += timediff; //Add time from last click to total timer
             console.log(timespent);
-            timerbutton.textContent = "Resume timer"
+            timerbutton.textContent = "Resume timer"; //Clicking on timer again 
         }
     })
 
@@ -379,36 +375,40 @@ if (workoutform) {
         let sessionrecords = {};
         let sessionvolume = 0;
 
-        for (let lift of ["deadlift", "squat", "bench", "overhead", "otherlift"]) {
-            //String converted to list of sets (e.g. [3x80,4x90])
-            let allsets = document.querySelector(`#${lift}`).value;
-            allsets = allsets.split(",");
-            //Store all weights lifted (e.g. [80, 90])
-            let allweights = [];
+        for (let exercise of ["deadlift", "squat", "bench", "overhead", "otherlift"]) {
+            let allsets = document.querySelector(`#${exercise}`).value; //Get all sets of current lift (deadlift or squat or etc.) - e.g. "3x80, 4x90"
+            allsets = allsets.split(","); //Convert from string to list of sets (e.g. [3x80,4x90])
+
+            let allweights = []; //Stores all weights lifted (e.g. [80, 90])
             for (let set of allsets) {
-                //Push only weight to array allweights
-                allweights.push(set.split("x")[1]);
+                allweights.push(set.split("x")[1]); //Push only weight to array allweights (e.g. set is 3x80, 80 is pushed to allweights)
 
                 //Add volume of each set to total weight lifted in session (e.g. 3x80 = 240)
-                //if statement to avoid adding undefined to sessionvolume (and ending up with sessionvolume=NaN) when input is empty
-                if (eval(set.replace("x", "*"))) {
-                    sessionvolume += eval(set.replace("x", "*"));
+                if (!isNaN(set.replaceAll(" ", "").replace("x", "")) && set.indexOf("x") > -1) { /*Only eval if set is 2 numbers and a x (and whitespace)
+                Do not eval something like "abc*def" to avoid sessionvolume += undefined (and ending up with sessionvolume=NaN) when input is empty*/
+                    if (eval(set.replace("x", "*").replaceAll(" ", ""))) { //Check if set can be eval'd (e.g. "1233x" passes the previous check but can't be eval'd)
+                        sessionvolume += eval(set.replace("x", "*").replaceAll(" ", "")); //Replace x with multiplication operator *, remove whitespace
+                    }
                 }
             }
-            //Find largest item in allweights and save as session record for that lift (e.g. deadlift: 90)
-            //Has to be converted to integer because it's a string, but this can be done last for efficiency because JS evaluates numeric strings as numbers
-            sessionrecords[lift] = Number(allweights.reduce((max, current) => (current > max ? current : max), allweights[0]));
+
+            //Find largest item in allweights and save as session record for that lift
+            //Example when exercise = "deadlift"
+            //allweights = [90, 80, 95, 67]
+            //sessionrecords = {"deadlift": 95, ...}
+            sessionrecords[exercise] = Number(allweights.reduce((max, current) => (current > max ? current : max), allweights[0]));
             
-            //Avoid null values in object
-            if (!sessionrecords[lift]) {
-                sessionrecords[lift] = -1;
+            /*If there are no sets completed, set sessionrecords[lift] to -1 so that it isn't undefined (will cause error in backend otherwise)
+            because the session records will be compared to all-time records in backend regardless of input */
+            if (!sessionrecords[exercise]) {
+                sessionrecords[exercise] = -1; //Current all-time record > -1 so all-time record will stay the same
             }
         }
 
         //Convert timespent from seconds to minutes, bump up by 1 to include incomplete mins (e.g. 40m50s = 41m)
         timespent = Math.floor(timespent/60) + 1;
 
-        if (!timerstopped) {
+        if (timer_running) {
             msg.textContent = "Hey broski, stop the timer, man!"
         } else {
             let response = await window.fetch(`/workout?records=${JSON.stringify(sessionrecords)}&volume=${sessionvolume}&timespent=${timespent}`);

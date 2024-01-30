@@ -20,27 +20,29 @@
             padding:0 15% 0 15%;
         }
 
-        @media only screen and (max-width: 900px) {
+        @media only screen and (max-width: 900px) { /*viewport 900px or narrower*/
             #cardcontainer {
-                flex-direction: column;
+                flex-direction: column; /*vertical card layout*/
                 align-items:center;
             }
 
             .card {
-                width:400px;
+                width:400px; /*hard limit on card width*/
             }
 
-            .card>a:first-child {
+            .card>a:first-child { /*the first link in a card element*/
                 font-size:1.3rem;
                 font-weight:500;
             }
         }
 
-        @media only screen and (min-width: 901px) {
+        @media only screen and (min-width: 901px) { /*viewport wider than 900px*/
             #cardcontainer {
-                flex-direction: row;
+                flex-direction: row; /*horizontal card layout*/
             }
-
+                                    
+            /*dynamic card width, scales with viewport*/
+            
             .card>a:first-child {
                 font-size:1.8vw;
                 font-weight:500;
