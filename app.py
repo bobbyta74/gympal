@@ -60,6 +60,14 @@ app.secret_key = 'x\xed9\xa4P\xf9\x1b\xea\xb5\x94\xc4\x90}\x7f\xd6\xb3'
 def front():
     return flask.redirect("/static/login.html")
 
+import hashlib
+def encrypt(pwd):
+    pwd_bytes = pwd.encode("utf-8")
+    myhash = hashlib.sha256()
+    myhash.update(pwd_bytes)
+    pwd_encrypted = myhash.hexdigest()
+    return pwd_encrypted
+
 #login.html
 @app.route("/login", methods = ["GET"])
 def login():

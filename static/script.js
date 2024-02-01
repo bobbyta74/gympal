@@ -74,7 +74,28 @@ if (dropdownbtn) {
     })
 }
 
-
+//Password encryption - sha256 hash
+//Other details (username, lift totals etc.) don't need to be encrypted
+    //Because they're public (in leaderboards/friends) anyway
+    async function hash(mypwd) {
+        //Encode mypwd to UTF-8 standard
+        const utf8 = new TextEncoder().encode(mypwd);
+        //Create sha256 hash out of the encoded input
+            //This is an ArrayBuffer object, so unwieldy to store
+        const hash_buffer = await crypto.subtle.digest('SHA-256', utf8);
+    
+    //Convert sha256 hash to hex form to make it more readable and simpler to store
+        //First convert the hash to an array of bytes
+        const hash_array = Array.from(new Uint8Array(hash_buffer));
+        //Then convert the array to a hex string
+        const hash_hex = hash_array
+          .map((byte) => byte.toString(16) //Convert each byte in the array to hex form
+          .padStart(2, '0')) //Add leading 0s if necessary (e.g. "0a" instead of a) for consistent format
+          .join(''); //Convert the array of formatted bytes to a string
+    
+        //Return the hex form of the sha256 hash
+        return hash_hex;
+    }
 
 //login.html
 let submitlogin = document.querySelector("#submitlogin");
@@ -82,8 +103,10 @@ if (submitlogin) {
     submitlogin.addEventListener("click", async function(event) {
         //Avoid refreshing page
         event.preventDefault();
+        //Encrypt password
+        let pwd_encrypted = await hash(pwd.value);
         //Take username and password from input fields, send to app.py and wait for it to respond
-        let response = await window.fetch(`/login?username=${username.value.trim()}&password=${pwd.value}`);
+        let response = await window.fetch(`/login?username=${username.value.trim()}&password=${pwd_encrypted}`);
         response = await response.json()
         if (response.type == "success") {
             msg.textContent = "Login successful";
@@ -131,10 +154,10 @@ if (submitregister) {
 
         //Expression validating all inputs
         const formvalid = username.value.trim().length > 0 && pwd.value.trim().length > 0 && (numberafterstreet.test(address.value) || streetafternumber.test(address.value)) && style && Number(deadlift.value) > 0 && Number(squat.value) > 0 && Number(bench.value) > 0 && Number(overhead.value) > 0 && myschedule != "";
-        
+        let pwd_encrypted = await hash(pwd.value);
         if (formvalid) {
             msg.textContent = "";
-            let response = await window.fetch(`/register?username=${username.value.trim()}&pwd=${pwd.value}&address=${address.value.trim()}&membership=${membership.value}&style=${style}&deadlift=${deadlift.value}&squat=${squat.value}&bench=${bench.value}&&overhead=${overhead.value}&schedule=${myschedule}`);
+            let response = await window.fetch(`/register?username=${username.value.trim()}&pwd=${pwd_encrypted}&address=${address.value.trim()}&membership=${membership.value}&style=${style}&deadlift=${deadlift.value}&squat=${squat.value}&bench=${bench.value}&&overhead=${overhead.value}&schedule=${myschedule}`);
             response = await response.json()
 
             if (response.error) {
@@ -328,7 +351,7 @@ if (workoutform) {
             let correspondingdiv = document.querySelector(`#${mycheckbox.getAttribute("id").slice(0,-1)+"div"}`)
             
             if (mycheckbox.checked) { 
-                //If checkbox checked then increment counter and show corresponding input div (e.g. deadlift checked -> show deadlift input)
+                //If checkbox checked then increment counter and show corresponding input div
                 howmanychecked += 1;
                 correspondingdiv.style.display = "flex";
                 correspondingdiv.style.justifyContent = "space-between";
@@ -380,12 +403,12 @@ if (workoutform) {
             allsets = allsets.split(","); //Convert from string to list of sets (e.g. [3x80,4x90])
 
             let allweights = []; //Stores all weights lifted (e.g. [80, 90])
-            for (let set of allsets) {
+            for (let set of allsets) { //Iterate through the sets
                 allweights.push(set.split("x")[1]); //Push only weight to array allweights (e.g. set is 3x80, 80 is pushed to allweights)
 
                 //Add volume of each set to total weight lifted in session (e.g. 3x80 = 240)
                 if (!isNaN(set.replaceAll(" ", "").replace("x", "")) && set.indexOf("x") > -1) { /*Only eval if set is 2 numbers and a x (and whitespace)
-                Do not eval something like "abc*def" to avoid sessionvolume += undefined (and ending up with sessionvolume=NaN) when input is empty*/
+                Do not eval something like "abc*def" to avoid sessionvolume += undefined (and ending up with sessionvolume=NaN)*/
                     if (eval(set.replace("x", "*").replaceAll(" ", ""))) { //Check if set can be eval'd (e.g. "1233x" passes the previous check but can't be eval'd)
                         sessionvolume += eval(set.replace("x", "*").replaceAll(" ", "")); //Replace x with multiplication operator *, remove whitespace
                     }
@@ -505,28 +528,33 @@ async function displayschedule() {
         }
         */
 
-       //Convert index of current cell to name of weekday to access workouts for this day (e.g. cell of index 2 is Wednesday, so get response.schedule["Wednesday"])
-       //workoutsforday = response.schedule["Wednesday"] = [[ 10, "mikolajszywala", "benchpress,overhead,squat", … ], [ 15, "mikolajszywala", "deadlift", … ]]
+        //Convert index of current cell to name of weekday (e.g. cell of index 2 is Wednesday, so get response.schedule["Wednesday"])
+        //workoutsforday = response.schedule["Wednesday"] 
+            // = [[ 10, "mikolajszywala", "benchpress,overhead,squat", … ], [ 15, "mikolajszywala", "deadlift", … ]]
         let workoutsforday = (response.schedule[daysofweek[datacells.indexOf(cell)]]); 
         let labels = ["Organiser: ", "Exercises: ", "Partners: ", "Start time: ", "End time: "] //Labels that will be added to the workout element
         for (let workout of workoutsforday) { //Iterate through 2D array - each workout is a 1D list
             if (workout) {
                 let workoutdiv = document.createElement("div");
-                workoutdiv.setAttribute("id", workout[0]); //Set ID of div to workoutID so that you know which workout should be deleted from database when remove button is clicked
+                //Set ID of div to workoutID so you know which workout to delete when 'x' clicked
+                workoutdiv.setAttribute("id", workout[0]);
                 workoutdiv.classList.add("workoutdiv"); //Add class "workoutdiv" for styling
-                let deetsdiv = document.createElement("div"); //The text portion of the workout div (part without the remove button)
-                workout = workout.slice(1); //Remove workoutID from workout list to avoid displaying workoutID to user (because it's useless and confusing to them)
+
+                //deetsdiv is the text portion of the workout div (part without the remove button)
+                let deetsdiv = document.createElement("div"); 
+                workout = workout.slice(1); //Remove workoutID from workout list so it isn't displayed (unnecessary)
                 for (let detail of workout) { //Iterate through 1D list (e.g. [ 10, "mikolajszywala", "benchpress,overhead,squat", … ])
-                    let mylabel = labels[workout.indexOf(detail)]; //Get the label corresponding to the detail (e.g. detail "mikolajszywala" corresponds to label "Organiser: ")
+                    let mylabel = labels[workout.indexOf(detail)]; //Get label corresponding to the detail (e.g. "Organiser:" "mikolajszywala")
                     
                     //If there are no workout partners, display "none" instead of literally nothing
-                    let detailtodisplay = detail; /*Have to make new variable "detailtodisplay", 
-                    as changing "detail" doesn't actually change the element in the 1D array (needed on line 527) 
-                    */
+                    let detailtodisplay = detail; //Have to make new variable "detailtodisplay", 
+                                                //as changing "detail" doesn't actually change the element in the 1D array (needed on line 527) 
+                    
                     if (mylabel == "Partners: " && detailtodisplay.length == 0) {
                         detailtodisplay = "<b>none</b>"
                     }
-                    deetsdiv.innerHTML += "<b>" + labels[workout.indexOf(detail)] + "</b>" + detailtodisplay + "<br>"; //Display label and detail (e.g. Organiser: mikolajszywala)
+                    //Display labelled detail (e.g. Organiser: mikolajszywala)
+                    deetsdiv.innerHTML += "<b>" + labels[workout.indexOf(detail)] + "</b>" + detailtodisplay + "<br>";
                 }
                 workoutdiv.appendChild(deetsdiv); 
 
