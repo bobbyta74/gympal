@@ -254,35 +254,45 @@ def matches():
             gymbro_as_list.append(round(geopy.distance.geodesic(usercoords, gymbrocoords).km, 3)) #Add to potential gymbro (list) the distance between them and the current user (3dp)
             possible_gymbros.append(gymbro_as_list) #Add potential gymbro (list) to 2D list of gymbros
             possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=False) #Sort 2D list of gymbros by distance (last item in 1D list)
+    
     #schedule
     elif sorting_factor == "Schedule coverage (%)":
-        def schedulecoverage(myschedule, otherschedule): #Returns how much of myschedule is included in otherschedule (e.g. "mon, tue, wed" is 67% covered in "mon, tue, fri")
-            #Turn both comma-separated strings into lists
-            a = myschedule.split(",")
-            origlength = len(a) #Count initial length of myschedule (to be used in later calculation)
-            b = otherschedule.split(",")
+       #Returns how much of myschedule is included in otherschedule (e.g. "mon, tue, wed" is 67% covered in "mon, tue, fri")
+       def schedulecoverage(myschedule, otherschedule):
+           #Turn both comma-separated strings into lists
+           a = myschedule.split(",")
+           origlength = len(a) #Count initial length of myschedule (to be used in later calculation)
+           b = otherschedule.split(",")
 
-            #Remove days from myschedule that are covered by otherschedule, if every day is left then there is no coverage, if no days are left coverage = 100%
-            for day in b:
-                try:
-                    a.remove(day)
-                except:
-                    pass #try/except used to avoid errors trying to remove something that isn't there (e.g. "thu" from [mon, wed, fri])
-            return int(100 - (len(a)/origlength*100)) #Return proportion of days in common (days that were removed/did NOT remain) to total days in myschedule
 
-        queried_gymbros = cursor.execute("""
-        SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule
-        FROM users
-        WHERE membership = ? AND style = ? AND username <> ?
-        """, [ result["membership"], result["style"], result["username"] ]).fetchall()
-        possible_gymbros = []
-        for gymbro in queried_gymbros:
-            #Add schedule coverage to each gymbro's record tuple (in the query result, not in the actual table)
-            gymbro_as_list = list(gymbro)
-            gymbro_as_list.append(schedulecoverage(result["schedule"], gymbro[8])) #gymbro[8] is potential gymbro's schedule
-            possible_gymbros.append(gymbro_as_list)
-        #Sort the query result by gymbros' schedule coverages (last item in 1D list)
-        possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=True)
+           #Remove days from myschedule that are covered by otherschedule
+               #If every day is left then there is no coverage, if no days are left then coverage = 100%
+           for day in b:
+               #try/except used to avoid errors removing items that aren't in list (e.g. "thu" from ["mon", "wed", "fri"])
+               try:
+                   a.remove(day)
+               except:
+                   pass
+           #Return proportion of days in common (days that were removed) to total days in myschedule
+           return int(100 - (len(a)/origlength*100))
+
+
+       queried_gymbros = cursor.execute("""
+       SELECT username, coords, membership, style, deadlift, squat, bench, overhead, schedule
+       FROM users
+       WHERE membership = ? AND style = ? AND username <> ?
+       """, [ result["membership"], result["style"], result["username"] ]).fetchall()
+       possible_gymbros = []
+       for gymbro in queried_gymbros:
+           #Add schedule coverage to each gymbro's record tuple (in the query result, not in the actual table)
+           gymbro_as_list = list(gymbro) #Convert gymbro from tuple to list (so can append data)
+           potential_gymbro_schedule = gymbro[8] #gymbro[8] corresponds to potential gymbro's schedule
+           #Calculate coverage between current user and potential gymbro
+           gymbro_as_list.append(schedulecoverage(result["schedule"], potential_gymbro_schedule))
+           #Add gymbro (with added schedule coverage) to list of possible gymbros
+           possible_gymbros.append(gymbro_as_list)
+       #Sort gymbros by descending schedule coverage (schedule coverage is last item in each gymbro_as_list)
+       possible_gymbros = sorted(possible_gymbros, key=lambda x: x[-1], reverse=True)
     
     return {
         "matches": possible_gymbros

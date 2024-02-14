@@ -99,6 +99,13 @@ if (dropdownbtn) {
 
 //login.html
 let submitlogin = document.querySelector("#submitlogin");
+/*
+This one script.js file is run on every page to avoid file clutter
+But only login.html has element #submitlogin
+Trying to manipulate #submitlogin on any page other than login.html will throw a ReferenceError
+because we are trying to change an element that is undefined there
+So query selector and if-statement used so #submitlogin is only manipulated on the right page
+*/
 if (submitlogin) {
     submitlogin.addEventListener("click", async function(event) {
         //Avoid refreshing page
